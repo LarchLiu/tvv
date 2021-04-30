@@ -1,0 +1,50 @@
+name: github pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "vue-twitter/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Get settings
+        id: settings
+        uses: ./actions/get-settings-action
+        with:
+          settings_path: settings.json
+
+      - uses: bahmutov/npm-install@v1
+        with:
+          working-directory: vue-twitter
+
+      - run: npm run build
+        working-directory: vue-twitter
+        env:
+          NODE_ENV: production
+          VUE_APP_PIC_BED: ${{ steps.settings.outputs.PicBed }}
+          VUE_APP_QINIU_DOMAIN: ${{ secrets.QINIU_DOMAIN }}
+          VUE_APP_QINIU_RESOURCE_PREFIX: ${{ secrets.QINIU_RESOURCE_PREFIX }}
+          VUE_APP_REPO_URL: /repos/${{ github.repository }}/dispatches
+
+      - run: |
+          cp -r ${{ github.workspace }}/twitter-json/raw/twitter ${{ github.workspace }}/vue-twitter/dist
+
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./vue-twitter/dist
