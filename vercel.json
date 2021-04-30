@@ -1,0 +1,7 @@
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/twitter/(.*)", "dest": "/twitter/(.*)"},
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
