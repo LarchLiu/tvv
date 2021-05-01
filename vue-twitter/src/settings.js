@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'GH Twitter',
+  title: 'TVV',
 
   /**
    * @type {boolean} true | false

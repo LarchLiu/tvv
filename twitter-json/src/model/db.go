@@ -11,15 +11,16 @@ import (
 )
 
 // DbInit init mogodb.
-func DbInit() *qmgo.Client {
+func DbInit() (*qmgo.Client, error) {
 	uri := os.Getenv("MONGODB_CLOUD_URI")
-	client, _ := qmgo.NewClient(context.Background(), &qmgo.Config{Uri: uri})
-	return client
+	client, err := qmgo.NewClient(context.Background(), &qmgo.Config{Uri: uri})
+	return client, err
 }
 
 // DbColl use collection.
 func DbColl(client *qmgo.Client, name string) *qmgo.Collection {
-	db := client.Database("twitter")
+	database := os.Getenv("MONGODB_DATABASE")
+	db := client.Database(database)
 	coll := db.Collection(name)
 	return coll
 }
