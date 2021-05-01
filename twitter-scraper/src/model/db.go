@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"twitter-json/src/utils"
+	"twitter-scraper/src/utils"
 
 	"github.com/qiniu/qmgo"
 	"go.mongodb.org/mongo-driver/bson"

@@ -38,12 +38,12 @@ jobs:
 
       - name: Get dependencies
         run: go get -v -t -d ./...
-        working-directory: twitter-json
+        working-directory: twitter-scraper
 
       - name: Change users and run scraper
         if: ${{ github.event.action == 'addusers' || github.event.action == 'delusers' }}
         run: go run main.go
-        working-directory: twitter-json
+        working-directory: twitter-scraper
         env:
           EVENT_TYPE: ${{ github.event.action }}
           USERS_DATA: ${{ github.event.client_payload.users }}
@@ -53,7 +53,7 @@ jobs:
       - name: Run scraper
         if: ${{ !(github.event.action=='addusers' || github.event.action=='delusers') }}
         run: go run main.go
-        working-directory: twitter-json
+        working-directory: twitter-scraper
         env:
           MONGODB_CLOUD_URI: ${{ secrets.MONGODB_CLOUD_URI }}
           MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}

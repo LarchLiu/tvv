@@ -1,4 +1,4 @@
-module twitter-json
+module twitter-scraper
 
 go 1.13
 

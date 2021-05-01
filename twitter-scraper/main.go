@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	"twitter-json/src/model"
-	"twitter-json/src/utils"
+	"twitter-scraper/src/model"
+	"twitter-scraper/src/utils"
 
 	"github.com/caarlos0/env/v6"
 	twitterscraper "github.com/n0madic/twitter-scraper"
