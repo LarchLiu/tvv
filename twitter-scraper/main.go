@@ -28,9 +28,9 @@ func main() {
 		fmt.Println(e)
 		return
 	}
-	collProfile := model.DbColl(cli, "profile")
+	collProfile := model.DbColl(cli, "users")
 	collTweet := model.DbColl(cli, "tweets")
-	collUpdate := model.DbColl(cli, "update")
+	collUpdate := model.DbColl(cli, "updateInfo")
 	defer func() {
 		model.DbClose(cli)
 	}()
