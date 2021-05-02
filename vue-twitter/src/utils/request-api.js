@@ -1,6 +1,6 @@
 import service from './request'
 
-const base = ''
+const base = '/api'
 
 const postRequest = (url, payload = {}) => {
   return new Promise((resolve, reject) => {
@@ -64,7 +64,7 @@ const getRequest = (url, payload = {}) => {
       url: base + url,
       params: payload
     }).then(response => {
-      resolve(response)
+      resolve(response.data)
     }).catch(error => {
       reject(error)
     })

@@ -390,6 +390,7 @@ export default {
 
     const dataInit = () => {
       twitterApi.getUsersData().then(res => {
+        console.log(res)
         usersList.value = res
         usersListObj.value = arrToObj(res, 'Username')
         currentUser.value = res[0].Username

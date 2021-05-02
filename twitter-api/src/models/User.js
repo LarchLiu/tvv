@@ -1,0 +1,38 @@
+/* eslint-disable func-names */
+const mongoose = require('mongoose');
+require('mongoose-long')(mongoose);
+
+const { Types: { Long } } = mongoose;
+
+const UserSchema = new mongoose.Schema({
+  userinfo: {
+    avatar: String,
+    username: String,
+    name: String,
+    lasttweettime: Long,
+    lastupdatetime: Long,
+  },
+  profile: {
+    avatar: String,
+    banner: String,
+    biography: String,
+    birthday: String,
+    followerscount: Long,
+    followingcount: Long,
+    friendscount: Long,
+    isprivate: Boolean,
+    isverified: Boolean,
+    joined: Date,
+    likescount: Long,
+    listedcount: Long,
+    location: String,
+    name: String,
+    pinnedtweetids: [String],
+    tweetscount: Long,
+    url: String,
+    userid: String,
+    username: String,
+    website: String,
+  },
+});
+module.exports = mongoose.model('users', UserSchema);
