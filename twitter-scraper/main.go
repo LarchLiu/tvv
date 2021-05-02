@@ -30,7 +30,7 @@ func main() {
 	}
 	collProfile := model.DbColl(cli, "users")
 	collTweet := model.DbColl(cli, "tweets")
-	collUpdate := model.DbColl(cli, "updateInfo")
+	collUpdate := model.DbColl(cli, "updates")
 	defer func() {
 		model.DbClose(cli)
 	}()
