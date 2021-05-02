@@ -82,6 +82,7 @@ func main() {
 					one.Username = user
 					one.LastTweetTime = 0
 					one.LastUpdateTime = time.Now().Unix()
+					one.TweetsCount = 0
 					collProfile.InsertOne(ctx, utils.DbProfile{UserInfo: one.UserInfo})
 				}
 			}
@@ -146,6 +147,8 @@ func main() {
 				collTweet.InsertMany(ctx, tweets)
 			}
 
+			tweetsCnt, err := collTweet.Find(ctx, bson.M{"username": user}).Count()
+
 			profile, err := scraper.GetProfile(user)
 			if err != nil {
 				fmt.Println(err)
@@ -157,7 +160,7 @@ func main() {
 					profile.Banner = utils.ReplaceDomain(profile.Banner, "")
 				}
 				userInfo := utils.UserInfo{Avatar: profile.Avatar, Username: user, Name: profile.Name,
-					LastTweetTime: curLastTweetTime, LastUpdateTime: time.Now().Unix()}
+					LastTweetTime: curLastTweetTime, LastUpdateTime: time.Now().Unix(), TweetsCount: tweetsCnt}
 				dbProfile := utils.DbProfile{UserInfo: userInfo, Profile: profile}
 
 				update := bson.D{

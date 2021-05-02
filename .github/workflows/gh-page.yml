@@ -30,8 +30,8 @@ jobs:
         env:
           NODE_ENV: production
           VUE_APP_REPO_URL: /repos/${{ github.repository }}/dispatches
-          CF_WORKERS_VIDEO_DOMAIN: ${{ secrets.CF_WORKERS_VIDEO_DOMAIN }}
-          CF_WORKERS_IMG_DOMAIN: ${{ secrets.CF_WORKERS_IMG_DOMAIN }}
+          VUE_APP_CF_WORKERS_VIDEO_DOMAIN: ${{ secrets.CF_WORKERS_VIDEO_DOMAIN }}
+          VUE_APP_CF_WORKERS_IMG_DOMAIN: ${{ secrets.CF_WORKERS_IMG_DOMAIN }}
 
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3

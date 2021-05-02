@@ -23,8 +23,8 @@
                 :key="i"
                 @click="changeUser(i)"
               >
-                <a-badge :dot="needUpdate && (updateUser.findIndex(e => e === user.Username) >= 0)">
-                  <a :class="user.Username === currentUser ? 'current' : 'normal'">{{ user.Name ? user.Name : user.Username }}</a>
+                <a-badge :dot="needUpdate && (updateUser.findIndex(e => e === user.userinfo.username) >= 0)">
+                  <a :class="user.userinfo.username === currentUser ? 'current' : 'normal'">{{ user.userinfo.name ? user.userinfo.name : user.userinfo.username }}</a>
                 </a-badge>
               </div>
             </template>
@@ -45,13 +45,13 @@
               :key="i"
               @click="changeUser(i)"
             >
-              <a-badge :dot="needUpdate && (updateUser.findIndex(e => e === user.Username) >= 0)">
-                <a :class="user.Username === currentUser ? 'current' : 'normal'">{{ user.Name ? user.Name : user.Username }}</a>
+              <a-badge :dot="needUpdate && (updateUser.findIndex(e => e === user.userinfo.username) >= 0)">
+                <a :class="user.userinfo.username === currentUser ? 'current' : 'normal'">{{ user.userinfo.name ? user.userinfo.name : user.userinfo.username }}</a>
               </a-badge>
             </div>
           </a-drawer>
         </div>
-        <div v-if="usersList.length > 0 && usersData[currentUser]" :class="isMobile ? 'tweets-mobile' : 'tweets'">
+        <div v-if="usersList.length > 0 && usersListObj[currentUser]" :class="isMobile ? 'tweets-mobile' : 'tweets'">
           <fixed-header id-name="twitter" :style-class-name="isMobile ? 'fixed-header-mobile' : 'fixed-header'">
             <div class="header">
               <span v-if="isMobile" style="margin-right: 10px">
@@ -60,10 +60,10 @@
                   <MenuUnfoldOutlined v-else class="menu" @click="sidebarOpen=!sidebarOpen" />
                 </a-badge>
               </span>
-              <span v-if="currentUser === usersList[0].Username" class="name">全部</span>
-              <span v-else class="name">{{ usersData[currentUser].Profile.Name }}</span>
+              <span v-if="currentUser === usersList[0].userinfo.username" class="name">全部</span>
+              <span v-else class="name">{{ usersListObj[currentUser].profile.name }}</span>
               <span style="font-weight: 700; color: rgb(15, 20, 25);">
-                {{ usersData[currentUser].TweetsCount }}
+                {{ usersListObj[currentUser].userinfo.tweetscount }}
               </span>
               <span style="color: rgb(91, 112, 131); margin-right: 20px"> 推文</span>
               <span v-if="isMobile" class="floating">
@@ -94,21 +94,21 @@
             </div>
           </fixed-header>
           <twitter
-            v-if="currentUser === usersList[0].Username"
+            v-if="currentUser === usersList[0].userinfo.username"
             :isAll="true"
-            :detail="usersData[currentUser]"
+            :detail="usersListObj[currentUser]"
             :usersObj="usersListObj"
             :isMobile="isMobile"
-            :endPage="curPage === usersData[currentUser].Pages"
+            :endPage="isEndPage"
             :loadingMore="loadingMore"
             @loadMore="getNextPage"
             @imgClick="imageClick"
           />
           <twitter
             v-else
-            :detail="usersData[currentUser]"
+            :detail="usersListObj[currentUser]"
             :isMobile="isMobile"
-            :endPage="curPage === usersData[currentUser].Pages"
+            :endPage="isEndPage"
             :loadingMore="loadingMore"
             @loadMore="getNextPage"
             @imgClick="imageClick"
@@ -169,6 +169,7 @@ import ImagePreview from '@/components/ImagePreview/index'
 import FixedHeader from '@/components/FixedHeader/index.vue'
 import { Octokit } from '@octokit/core'
 import { arrToObj, uniqueArr, parseTime } from '@/utils/index'
+import settings from '@/settings'
 import {
   MinusOutlined,
   PlusOutlined,
@@ -219,8 +220,12 @@ export default {
     const repoUrl = process.env.VUE_APP_REPO_URL
     const delUserData = computed(() => {
       if (usersList.value.length > 0) {
-        return usersList.value.slice(1).map(item => { return item.Username })
+        return usersList.value.slice(1).map(item => { return item.userinfo.username })
       }
+    })
+    const isEndPage = computed(() => {
+      const pages = Math.ceil(parseInt(usersListObj.value[currentUser.value].userinfo.tweetscount, 10) / settings.pageSize)
+      return curPage.value === pages
     })
 
     let timer
@@ -390,13 +395,12 @@ export default {
 
     const dataInit = () => {
       twitterApi.getUsersData().then(res => {
-        console.log(res)
         usersList.value = res
-        usersListObj.value = arrToObj(res, 'Username')
-        currentUser.value = res[0].Username
+        usersListObj.value = arrToObj(res, 'userinfo.username')
+        currentUser.value = res[0].userinfo.username
         updateUser.value.push(currentUser.value)
         twitterApi.getUpdateInfo().then(info => {
-          updateTime.value = info.UpdateTime
+          updateTime.value = info.updatetime
         }).catch(e => {
           console.log(e)
         })
@@ -411,11 +415,11 @@ export default {
 
     const getUpdateInfo = () => {
       twitterApi.getUpdateInfo().then(res => {
-        if (updateTime.value < res.UpdateTime) {
-          updateTime.value = res.UpdateTime
-          if (res.IsUpdate) {
-            needUpdate.value = res.IsUpdate
-            updateUser.value = updateUser.value.concat(res.Users)
+        if (updateTime.value < res.updatetime) {
+          updateTime.value = res.updatetime
+          if (res.isupdate) {
+            needUpdate.value = res.isupdate
+            updateUser.value = updateUser.value.concat(res.users)
             updateUser.value = uniqueArr(updateUser.value)
           }
         }
@@ -428,7 +432,7 @@ export default {
     const getUserList = () => {
       twitterApi.getUsersData().then(res => {
         usersList.value = res
-        usersListObj.value = arrToObj(res, 'Username')
+        usersListObj.value = arrToObj(res, 'userinfo.username')
       }).catch(e => {
         console.log(e)
         // usersList.value = []
@@ -438,9 +442,10 @@ export default {
     const getUserTweets = (user, page) => {
       twitterApi.getTweetsData(user, page).then(data => {
         if (curPage.value === 1) {
-          usersData.value[user] = data
+          usersListObj.value[user].Tweets = data
+          // usersData.value[user] = usersListObj.value[user]
         } else {
-          usersData.value[user].Tweets = usersData.value[user].Tweets.concat(data.Tweets)
+          usersListObj.value[user].Tweets = usersListObj.value[user].Tweets.concat(data)
         }
         const idx = updateUser.value.findIndex(e => e === user)
         if (idx >= 0) {
@@ -461,7 +466,7 @@ export default {
     }
 
     const changeUser = (i) => {
-      currentUser.value = usersList.value[i].Username
+      currentUser.value = usersList.value[i].userinfo.username
       curPage.value = 1
       document.body.scrollTop = document.documentElement.scrollTop = 0
       if (sidebarOpen.value) {
@@ -477,7 +482,7 @@ export default {
     }
 
     const margeDetail = (tweet, profile) => {
-      return { Avatar: profile.Avatar, Name: profile.Name, ...tweet }
+      return { avatar: profile.avatar, name: profile.name, ...tweet }
     }
 
     const getTime = (unix) => {
@@ -537,6 +542,7 @@ export default {
     })
 
     return {
+      isEndPage,
       disablePreview,
       imageClick,
       imgPreview,

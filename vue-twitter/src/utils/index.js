@@ -349,10 +349,37 @@ export function removeClass (ele, cls) {
   }
 }
 
+function getValue (object, attribute) {
+  if (!attribute) return object
+  let data = object
+  attribute.split('.').forEach(function (item) {
+    data = data[item]
+  })
+  return data + '' // to string
+}
+
 export function arrToObj (arr, att) {
   const obj = {}
   for (const item of arr) {
-    obj[item[att].toString()] = item
+    const key = getValue(item, att)
+    obj[key] = item
+  }
+  return obj
+}
+
+/**
+ * object arr 按照 attribute 分类
+ * @param objArr object 数组
+ * @param attribute 数组内的需要分类的元素属性，可以多层级 如 'info.name' 以字符串形式传入，确保此属性不为 Object 且存在，否则会报错
+ */
+export function classifyByAtt (objArr, attribute) {
+  const obj = {}
+  for (let i = 0; i < objArr.length; i++) {
+    const key = getValue(objArr[i], attribute)
+    if (!obj[key]) {
+      obj[key] = []
+    }
+    obj[key].push(objArr[i])
   }
   return obj
 }

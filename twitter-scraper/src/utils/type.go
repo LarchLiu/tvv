@@ -10,6 +10,7 @@ type (
 		Name           string
 		LastTweetTime  int64
 		LastUpdateTime int64
+		TweetsCount    int64
 	}
 	// DbProfile type.
 	DbProfile struct {

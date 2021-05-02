@@ -9,53 +9,53 @@
         <a-avatar
           class="avatar"
           :size="46"
-          :src="tweet.Avatar"
+          :src="changeToCFImg(tweet.avatar)"
         />
         <span id="name">
-          <span style="font-weight: 700; border: 0 solid black; margin-right: 10px">{{ tweet.Name }}</span>
-          <span v-if="tweet.IsRetweet">转推 <span style="font-weight: 400; color: rgb(91, 112, 131);">{{ getRtName(tweet.Text) }}</span></span>
+          <span style="font-weight: 700; border: 0 solid black; margin-right: 10px">{{ tweet.name }}</span>
+          <span v-if="tweet.isretweet">转推 <span style="font-weight: 400; color: rgb(91, 112, 131);">{{ getRtName(tweet.text) }}</span></span>
           <span v-else style="font-weight: 400; color: rgb(91, 112, 131);">
-            {{ '@' + tweet.Username }}
+            {{ '@' + tweet.username }}
           </span>
         </span>
         <div>
           <span style="font-weight: 400; color: rgb(91, 112, 131);">
-            {{ getTime(tweet.Timestamp) }}
+            {{ getTime(tweet.timestamp) }}
           </span>
         </div>
       </div>
       <div ref="detail" class="detail">
         <div class="text">
-          <span v-html="tweet.HTML" />
+          <span v-html="tweet.html" />
         </div>
-        <div v-if="tweet.Videos" class="video">
-          <div v-for="(video, i) in tweet.Videos" :key="i" class="all-radius">
-            <vue3-video-player :src="video.URL" :cover="video.Preview"></vue3-video-player>
+        <div v-if="tweet.videos" class="video">
+          <div v-for="(video, i) in tweet.videos" :key="i" class="all-radius">
+            <vue3-video-player :src="changeToCFVideo(video.url)" :cover="changeToCFImg(video.preview)"></vue3-video-player>
           </div>
         </div>
         <div
-          v-else-if="tweet.Photos && tweet.Photos.length > 0"
+          v-else-if="tweet.photos && tweet.photos.length > 0"
           class="image"
         >
           <a
-            v-for="(img, i) in tweet.Photos"
+            v-for="(img, i) in tweet.photos"
             :key="i"
-            :class="checkImgRadiusClass(i, tweet.Photos.length)"
+            :class="checkImgRadiusClass(i, tweet.photos.length)"
           >
             <img
               v-if="imgHeight"
-              :src="img"
-              :width="checkImgWidth(i, tweet.Photos.length)"
+              :src="changeToCFImg(img)"
+              :width="checkImgWidth(i, tweet.photos.length)"
               :height="imgHeight"
-              :class="checkImgClass(i, tweet.Photos.length)"
+              :class="checkImgClass(i, tweet.photos.length)"
               @click="clickImg($event)"
             >
             <img
               v-else
-              :ref="i === 0 && tweet.Photos.length > 1 ? 'firstImg' : (tweet.Photos.length === 1 ? 'onlyOneImg' : 'otherImg')"
-              :src="img"
-              :width="checkImgWidth(i, tweet.Photos.length)"
-              :class="checkImgClass(i, tweet.Photos.length)"
+              :ref="i === 0 && tweet.photos.length > 1 ? 'firstImg' : (tweet.photos.length === 1 ? 'onlyOneImg' : 'otherImg')"
+              :src="changeToCFImg(img)"
+              :width="checkImgWidth(i, tweet.photos.length)"
+              :class="checkImgClass(i, tweet.photos.length)"
               :onload="imgOnload"
               @click="clickImg($event)"
             >
@@ -67,49 +67,49 @@
       <a-avatar
         class="avatar"
         :size="50"
-        :src="tweet.Avatar"
+        :src="changeToCFImg(tweet.avatar)"
       />
       <div ref="detail" class="detail">
         <div id="name">
-          <span style="font-weight: 700; border: 0 solid black; margin-right: 10px">{{ tweet.Name }}</span>
-          <span v-if="tweet.IsRetweet">转推 <span style="font-weight: 400; color: rgb(91, 112, 131);">{{ getRtName(tweet.Text) + ' · ' + getTime(tweet.Timestamp) }}</span></span>
+          <span style="font-weight: 700; border: 0 solid black; margin-right: 10px">{{ tweet.name }}</span>
+          <span v-if="tweet.isretweet">转推 <span style="font-weight: 400; color: rgb(91, 112, 131);">{{ getRtName(tweet.text) + ' · ' + getTime(tweet.timestamp) }}</span></span>
           <span v-else style="font-weight: 400; color: rgb(91, 112, 131);">
-            {{ '@' + tweet.Username + ' · ' + getTime(tweet.Timestamp) }}
+            {{ '@' + tweet.username + ' · ' + getTime(tweet.timestamp) }}
           </span>
         </div>
         <div class="text">
-          <span v-html="tweet.HTML" />
+          <span v-html="tweet.html" />
         </div>
-        <div v-if="tweet.Videos" class="video">
-          <div v-for="(video, i) in tweet.Videos" :key="i" class="all-radius">
+        <div v-if="tweet.videos" class="video">
+          <div v-for="(video, i) in tweet.videos" :key="i" class="all-radius">
             <div v-if="detailWidth"  :style="{ width: detailWidth }">
-              <vue3-video-player :src="video.URL" :cover="video.Preview"></vue3-video-player>
+              <vue3-video-player :src="changeToCFVideo(video.url)" :cover="changeToCFImg(video.preview)"></vue3-video-player>
             </div>
           </div>
         </div>
         <div
-          v-else-if="tweet.Photos && tweet.Photos.length > 0"
+          v-else-if="tweet.photos && tweet.photos.length > 0"
           class="image"
         >
           <a
-            v-for="(img, i) in tweet.Photos"
+            v-for="(img, i) in tweet.photos"
             :key="i"
-            :class="checkImgRadiusClass(i, tweet.Photos.length)"
+            :class="checkImgRadiusClass(i, tweet.photos.length)"
           >
             <img
               v-if="imgHeight"
-              :src="img"
-              :width="checkImgWidth(i, tweet.Photos.length)"
+              :src="changeToCFImg(img)"
+              :width="checkImgWidth(i, tweet.photos.length)"
               :height="imgHeight"
-              :class="checkImgClass(i, tweet.Photos.length)"
+              :class="checkImgClass(i, tweet.photos.length)"
               @click="clickImg($event)"
             >
             <img
               v-else
-              :ref="i === 0 && tweet.Photos.length > 1 ? 'firstImg' : (tweet.Photos.length === 1 ? 'onlyOneImg' : 'otherImg')"
-              :src="img"
-              :width="checkImgWidth(i, tweet.Photos.length)"
-              :class="checkImgClass(i, tweet.Photos.length)"
+              :ref="i === 0 && tweet.photos.length > 1 ? 'firstImg' : (tweet.photos.length === 1 ? 'onlyOneImg' : 'otherImg')"
+              :src="changeToCFImg(img)"
+              :width="checkImgWidth(i, tweet.photos.length)"
+              :class="checkImgClass(i, tweet.photos.length)"
               :onload="imgOnload"
               @click="clickImg($event)"
             >
@@ -146,6 +146,16 @@ export default {
     const detail = ref(null)
     const detailWidth = ref(0)
     const imgMaxHeight = ref(0)
+    const imgDomain = process.env.VUE_APP_CF_WORKERS_IMG_DOMAIN
+    const videoDomain = process.env.VUE_APP_CF_WORKERS_VIDEO_DOMAIN
+
+    const changeToCFImg = (src) => {
+      return imgDomain + src
+    }
+
+    const changeToCFVideo = (src) => {
+      return videoDomain + src
+    }
 
     const getTime = (timestamp) => {
       return formatTime(timestamp, null)
@@ -260,6 +270,8 @@ export default {
     })
 
     return {
+      changeToCFVideo,
+      changeToCFImg,
       getTime,
       getRtName,
       clickImg,

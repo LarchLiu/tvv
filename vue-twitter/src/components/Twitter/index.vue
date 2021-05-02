@@ -7,22 +7,22 @@
       <div v-if="!isAll" class="profile">
         <div class="name">
           <div style="font-size: 19px; font-weight: 800; border: 0 solid black;">
-            {{ detail.Profile.Name }}
+            {{ detail.profile.name }}
           </div>
           <div style="color: rgb(91, 112, 131) ; font-size: 15px; font-weight: 400; border: 0 solid black;">
-            {{ '@' + detail.Profile.Username }}
+            {{ '@' + detail.profile.username }}
           </div>
         </div>
         <div class="biography">
-          {{ detail.Profile.Biography }}
+          {{ detail.profile.biography }}
         </div>
         <div class="follow">
           <span style="font-weight: 700; color: rgb(15, 20, 25);">
-            {{ detail.Profile.FollowingCount }}
+            {{ detail.profile.followingcount }}
           </span>
           <span style="color: rgb(91, 112, 131); margin-right: 20px"> 正在关注</span>
           <span style="font-weight: 700; color: rgb(15, 20, 25);">
-            {{ detail.Profile.FollowersCount }}
+            {{ detail.profile.followerscount }}
           </span>
           <span style="color: rgb(91, 112, 131); margin-right: 20px"> 关注者</span>
         </div>
@@ -35,13 +35,13 @@
         >
           <card
             v-if="isAll && usersObj"
-            :tweet="margeDetail(tweet, { Avatar: usersObj[tweet.Username].Avatar, Name: usersObj[tweet.Username].Name})"
+            :tweet="margeDetail(tweet, { avatar: usersObj[tweet.username].userinfo.avatar, name: usersObj[tweet.username].userinfo.name})"
             :isMobile="isMobile"
             @imgClick="imageClick"
           />
           <card
             v-else
-            :tweet="margeDetail(tweet, detail.Profile)"
+            :tweet="margeDetail(tweet, detail.profile)"
             :isMobile="isMobile"
             @imgClick="imageClick"
           />
@@ -103,7 +103,7 @@ export default {
   },
   methods: {
     margeDetail (tweet, profile) {
-      return { Avatar: profile.Avatar, Name: profile.Name, ...tweet }
+      return { avatar: profile.avatar, name: profile.name, ...tweet }
     },
     loadMore () {
       this.$emit('loadMore')

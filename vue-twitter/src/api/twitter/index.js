@@ -1,4 +1,5 @@
 import API from '@/utils/request-api'
+import settings from '@/settings'
 
 function getUsersData () {
   const apiPath = '/users'
@@ -7,13 +8,13 @@ function getUsersData () {
 }
 
 function getTweetsData (user, page) {
-  const apiPath = `/tweets?page=${page - 1}&pageNum=20&username=${user}`
+  const apiPath = `/tweets?page=${page - 1}&pageSize=${settings.pageSize}&username=${user}`
 
   return API.getRequest(apiPath)
 }
 
 function getUpdateInfo () {
-  const apiPath = '/updates'
+  const apiPath = '/updateInfo'
 
   return API.getRequest(apiPath)
 }

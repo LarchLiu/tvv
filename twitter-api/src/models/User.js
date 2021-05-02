@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     name: String,
     lasttweettime: Long,
     lastupdatetime: Long,
+    tweetscount: Long,
   },
   profile: {
     avatar: String,
