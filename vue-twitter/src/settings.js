@@ -33,5 +33,5 @@ module.exports = {
    */
   errorLog: 'production',
 
-  pageSize: 20
+  pageSize: 20,
 }

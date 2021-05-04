@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="[ 'card', mouseEnter ? 'enter' : '']"
+    :class="['card', mouseEnter ? 'enter' : '']"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
@@ -12,14 +12,22 @@
           :src="changeToCFImg(tweet.avatar)"
         />
         <span id="name">
-          <span style="font-weight: 700; border: 0 solid black; margin-right: 10px">{{ tweet.name }}</span>
-          <span v-if="tweet.isretweet">转推 <span style="font-weight: 400; color: rgb(91, 112, 131);">{{ getRtName(tweet.text) }}</span></span>
-          <span v-else style="font-weight: 400; color: rgb(91, 112, 131);">
+          <span
+            style="font-weight: 700; border: 0 solid black; margin-right: 10px"
+            >{{ tweet.name }}</span
+          >
+          <span v-if="tweet.isretweet"
+            >转推
+            <span style="font-weight: 400; color: rgb(91, 112, 131)">{{
+              getRtName(tweet.text)
+            }}</span></span
+          >
+          <span v-else style="font-weight: 400; color: rgb(91, 112, 131)">
             {{ '@' + tweet.username }}
           </span>
         </span>
         <div>
-          <span style="font-weight: 400; color: rgb(91, 112, 131);">
+          <span style="font-weight: 400; color: rgb(91, 112, 131)">
             {{ getTime(tweet.timestamp) }}
           </span>
         </div>
@@ -30,13 +38,13 @@
         </div>
         <div v-if="tweet.videos" class="video">
           <div v-for="(video, i) in tweet.videos" :key="i" class="all-radius">
-            <vue3-video-player :src="changeToCFVideo(video.url)" :cover="changeToCFImg(video.preview)"></vue3-video-player>
+            <vue3-video-player
+              :src="changeToCFVideo(video.url)"
+              :cover="changeToCFImg(video.preview)"
+            ></vue3-video-player>
           </div>
         </div>
-        <div
-          v-else-if="tweet.photos && tweet.photos.length > 0"
-          class="image"
-        >
+        <div v-else-if="tweet.photos && tweet.photos.length > 0" class="image">
           <a
             v-for="(img, i) in tweet.photos"
             :key="i"
@@ -49,31 +57,41 @@
               :height="imgHeight"
               :class="checkImgClass(i, tweet.photos.length)"
               @click="clickImg($event)"
-            >
+            />
             <img
               v-else
-              :ref="i === 0 && tweet.photos.length > 1 ? 'firstImg' : (tweet.photos.length === 1 ? 'onlyOneImg' : 'otherImg')"
+              :ref="
+                i === 0 && tweet.photos.length > 1
+                  ? 'firstImg'
+                  : tweet.photos.length === 1
+                  ? 'onlyOneImg'
+                  : 'otherImg'
+              "
               :src="changeToCFImg(img)"
               :width="checkImgWidth(i, tweet.photos.length)"
               :class="checkImgClass(i, tweet.photos.length)"
               :onload="imgOnload"
               @click="clickImg($event)"
-            >
+            />
           </a>
         </div>
       </div>
     </div>
     <div v-else class="body">
-      <a-avatar
-        class="avatar"
-        :size="50"
-        :src="changeToCFImg(tweet.avatar)"
-      />
+      <a-avatar class="avatar" :size="50" :src="changeToCFImg(tweet.avatar)" />
       <div ref="detail" class="detail">
         <div id="name">
-          <span style="font-weight: 700; border: 0 solid black; margin-right: 10px">{{ tweet.name }}</span>
-          <span v-if="tweet.isretweet">转推 <span style="font-weight: 400; color: rgb(91, 112, 131);">{{ getRtName(tweet.text) + ' · ' + getTime(tweet.timestamp) }}</span></span>
-          <span v-else style="font-weight: 400; color: rgb(91, 112, 131);">
+          <span
+            style="font-weight: 700; border: 0 solid black; margin-right: 10px"
+            >{{ tweet.name }}</span
+          >
+          <span v-if="tweet.isretweet"
+            >转推
+            <span style="font-weight: 400; color: rgb(91, 112, 131)">{{
+              getRtName(tweet.text) + ' · ' + getTime(tweet.timestamp)
+            }}</span></span
+          >
+          <span v-else style="font-weight: 400; color: rgb(91, 112, 131)">
             {{ '@' + tweet.username + ' · ' + getTime(tweet.timestamp) }}
           </span>
         </div>
@@ -82,15 +100,15 @@
         </div>
         <div v-if="tweet.videos" class="video">
           <div v-for="(video, i) in tweet.videos" :key="i" class="all-radius">
-            <div v-if="detailWidth"  :style="{ width: detailWidth }">
-              <vue3-video-player :src="changeToCFVideo(video.url)" :cover="changeToCFImg(video.preview)"></vue3-video-player>
+            <div v-if="detailWidth" :style="{ width: detailWidth }">
+              <vue3-video-player
+                :src="changeToCFVideo(video.url)"
+                :cover="changeToCFImg(video.preview)"
+              ></vue3-video-player>
             </div>
           </div>
         </div>
-        <div
-          v-else-if="tweet.photos && tweet.photos.length > 0"
-          class="image"
-        >
+        <div v-else-if="tweet.photos && tweet.photos.length > 0" class="image">
           <a
             v-for="(img, i) in tweet.photos"
             :key="i"
@@ -103,16 +121,22 @@
               :height="imgHeight"
               :class="checkImgClass(i, tweet.photos.length)"
               @click="clickImg($event)"
-            >
+            />
             <img
               v-else
-              :ref="i === 0 && tweet.photos.length > 1 ? 'firstImg' : (tweet.photos.length === 1 ? 'onlyOneImg' : 'otherImg')"
+              :ref="
+                i === 0 && tweet.photos.length > 1
+                  ? 'firstImg'
+                  : tweet.photos.length === 1
+                  ? 'onlyOneImg'
+                  : 'otherImg'
+              "
               :src="changeToCFImg(img)"
               :width="checkImgWidth(i, tweet.photos.length)"
               :class="checkImgClass(i, tweet.photos.length)"
               :onload="imgOnload"
               @click="clickImg($event)"
-            >
+            />
           </a>
         </div>
       </div>
@@ -129,16 +153,16 @@ export default {
   props: {
     tweet: {
       type: Object,
-      default () {
+      default() {
         return {}
-      }
+      },
     },
     isMobile: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  setup (props, context) {
+  setup(props, context) {
     const mouseEnter = ref(false)
     const imgHeight = ref(0)
     const firstImg = ref(null)
@@ -226,11 +250,11 @@ export default {
     const imgOnload = () => {
       const e = firstImg.value
       if (e && e.width && e.naturalHeight && e.naturalWidth) {
-        imgHeight.value = e.naturalHeight * e.width / e.naturalWidth
+        imgHeight.value = (e.naturalHeight * e.width) / e.naturalWidth
       }
       const ooi = onlyOneImg.value
       if (ooi && ooi.width && ooi.naturalHeight && ooi.naturalWidth) {
-        const height = ooi.naturalHeight * ooi.width / ooi.naturalWidth
+        const height = (ooi.naturalHeight * ooi.width) / ooi.naturalWidth
         if (height > imgMaxHeight.value) {
           imgHeight.value = imgMaxHeight.value
         }
@@ -265,7 +289,7 @@ export default {
     watch(detail, () => {
       if (detail.value) {
         detailWidth.value = detail.value.clientWidth
-        imgMaxHeight.value = detailWidth.value * 9 / 16
+        imgMaxHeight.value = (detailWidth.value * 9) / 16
       }
     })
 
@@ -287,105 +311,105 @@ export default {
       onlyOneImg,
       detail,
       detailWidth,
-      imgMaxHeight
+      imgMaxHeight,
     }
-  }
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  .card {
-    padding: 10px 10px;
-    border-bottom: 1px solid #eee;
+.card {
+  padding: 10px 10px;
+  border-bottom: 1px solid #eee;
+  overflow: hidden;
+  text-align: left;
+  font-size: 15px;
+
+  .detail-info() {
+    .image {
+      margin-top: 10px;
+
+      .lt-radius {
+        img {
+          border-top-left-radius: 10px;
+        }
+      }
+      .lb-radius {
+        img {
+          border-bottom-left-radius: 10px;
+        }
+      }
+      .rt-radius {
+        img {
+          border-top-right-radius: 10px;
+        }
+      }
+      .rb-radius {
+        img {
+          border-bottom-right-radius: 10px;
+        }
+      }
+      .mg-right {
+        margin-right: 2px;
+      }
+      .mg-bottom {
+        margin-bottom: 2px;
+      }
+      .fit-contain {
+        object-fit: cover;
+      }
+    }
+    .video {
+      .all-radius {
+        border-radius: 10px;
+        overflow: hidden;
+      }
+    }
+    .text {
+      :deep(.Emoji) {
+        width: 18px;
+        height: 18px;
+      }
+      :deep(.PrettyLink-value) {
+        color: rgb(27, 149, 224);
+      }
+      :deep(.PrettyLink-prefix) {
+        color: rgb(27, 149, 224);
+      }
+    }
+  }
+
+  .body {
     overflow: hidden;
-    text-align: left;
-    font-size: 15px;
 
-    .detail-info() {
-      .image {
-        margin-top: 10px;
-
-        .lt-radius {
-          img {
-            border-top-left-radius: 10px;
-          }
-        }
-        .lb-radius {
-          img {
-            border-bottom-left-radius: 10px;
-          }
-        }
-        .rt-radius {
-          img {
-            border-top-right-radius: 10px;
-          }
-        }
-        .rb-radius {
-          img {
-            border-bottom-right-radius: 10px;
-          }
-        }
-        .mg-right {
-          margin-right: 2px;
-        }
-        .mg-bottom {
-          margin-bottom: 2px;
-        }
-        .fit-contain {
-          object-fit: cover;
-        }
-      }
-      .video {
-        .all-radius {
-          border-radius: 10px;
-          overflow: hidden;
-        }
-      }
-      .text {
-        :deep(.Emoji) {
-          width: 18px;
-          height: 18px;
-        }
-        :deep(.PrettyLink-value) {
-          color: rgb(27, 149, 224);
-        }
-        :deep(.PrettyLink-prefix) {
-          color: rgb(27, 149, 224);
-        }
-      }
+    .avatar {
+      float: left;
+      width: 50px;
     }
+    .detail {
+      float: right;
+      width: 510px;
 
-    .body {
-      overflow: hidden;
-
-      .avatar {
-        float: left;
-        width: 50px;
-      }
-      .detail {
-        float: right;
-        width: 510px;
-
-        .detail-info()
-      }
-    }
-
-    .body-mobile {
-      overflow: hidden;
-
-      .avatar {
-        width: 46px;
-        float: left;
-        margin-right: 10px;
-      }
-      .detail {
-        margin-top: 10px;
-
-        .detail-info()
-      }
+      .detail-info();
     }
   }
-  .enter {
-    background: rgb(247, 247, 247);
+
+  .body-mobile {
+    overflow: hidden;
+
+    .avatar {
+      width: 46px;
+      float: left;
+      margin-right: 10px;
+    }
+    .detail {
+      margin-top: 10px;
+
+      .detail-info();
+    }
   }
+}
+.enter {
+  background: rgb(247, 247, 247);
+}
 </style>

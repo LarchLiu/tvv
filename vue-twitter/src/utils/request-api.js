@@ -7,12 +7,14 @@ const postRequest = (url, payload = {}) => {
     return service({
       method: 'post',
       url: base + url,
-      data: payload
-    }).then(response => {
-      resolve(response)
-    }).catch(error => {
-      reject(error)
+      data: payload,
     })
+      .then((response) => {
+        resolve(response)
+      })
+      .catch((error) => {
+        reject(error)
+      })
   })
 }
 const uploadFileRequest = (url, payload = {}) => {
@@ -22,13 +24,15 @@ const uploadFileRequest = (url, payload = {}) => {
       url: base + url,
       data: payload,
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }).then(response => {
-      resolve(response)
-    }).catch(error => {
-      reject(error)
+        'Content-Type': 'multipart/form-data',
+      },
     })
+      .then((response) => {
+        resolve(response)
+      })
+      .catch((error) => {
+        reject(error)
+      })
   })
 }
 const patchRequest = (url, payload = {}) => {
@@ -36,12 +40,14 @@ const patchRequest = (url, payload = {}) => {
     service({
       method: 'patch',
       url: base + url,
-      data: payload
-    }).then(response => {
-      resolve(response)
-    }).catch(error => {
-      reject(error)
+      data: payload,
     })
+      .then((response) => {
+        resolve(response)
+      })
+      .catch((error) => {
+        reject(error)
+      })
   })
 }
 const deleteRequest = (url, payload = {}) => {
@@ -49,12 +55,14 @@ const deleteRequest = (url, payload = {}) => {
     service({
       method: 'delete',
       url: base + url,
-      data: payload
-    }).then(response => {
-      resolve(response)
-    }).catch(error => {
-      reject(error)
+      data: payload,
     })
+      .then((response) => {
+        resolve(response)
+      })
+      .catch((error) => {
+        reject(error)
+      })
   })
 }
 const getRequest = (url, payload = {}) => {
@@ -62,12 +70,14 @@ const getRequest = (url, payload = {}) => {
     service({
       method: 'get',
       url: base + url,
-      params: payload
-    }).then(response => {
-      resolve(response.data)
-    }).catch(error => {
-      reject(error)
+      params: payload,
     })
+      .then((response) => {
+        resolve(response.data)
+      })
+      .catch((error) => {
+        reject(error)
+      })
   })
 }
 export default {
@@ -75,5 +85,5 @@ export default {
   postRequest,
   deleteRequest,
   patchRequest,
-  uploadFileRequest
+  uploadFileRequest,
 }

@@ -1,13 +1,27 @@
 <template>
   <div class="aside">
-    <fixed-header v-if="needFixed" :id-name="idName" style-class-name="fixed-header-aside" @change="handleFixedChange">
-      <div class="aside-header" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-        <span style="font-size: 15px; font-weight: 800; border: 0 solid black;">{{ title }}</span>
+    <fixed-header
+      v-if="needFixed"
+      :id-name="idName"
+      style-class-name="fixed-header-aside"
+      @change="handleFixedChange"
+    >
+      <div
+        class="aside-header"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
+      >
+        <span
+          style="font-size: 15px; font-weight: 800; border: 0 solid black"
+          >{{ title }}</span
+        >
         <slot name="btn" />
       </div>
     </fixed-header>
     <div v-else class="aside-header">
-      <span style="font-size: 15px; font-weight: 800; border: 0 solid black;">{{ title }}</span>
+      <span style="font-size: 15px; font-weight: 800; border: 0 solid black">{{
+        title
+      }}</span>
       <slot name="btn" />
     </div>
     <div
@@ -37,79 +51,79 @@ export default {
   props: {
     title: {
       type: String,
-      default: ''
+      default: '',
     },
     needFixed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     idName: {
       type: String,
-      default: 'aside'
-    }
+      default: 'aside',
+    },
   },
-  data () {
+  data() {
     return {
       fixed: false,
-      pop_display: true
+      pop_display: true,
     }
   },
   methods: {
-    handleFixedChange (val) {
+    handleFixedChange(val) {
       this.fixed = val
       this.pop_display = true
     },
-    handleMouseEnter () {
+    handleMouseEnter() {
       if (this.fixed) {
         this.pop_display = true
       }
     },
-    handleMouseLeave () {
+    handleMouseLeave() {
       if (this.fixed) {
         this.pop_display = true
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  .aside {
-    margin-bottom: 15px;
-    ::v-deep(.fixed-header-aside) {
-      position:fixed;
-      top:0;
-      width: 210px;
-      z-index:999;
-    }
-    .aside-header {
-      padding: 10px;
-      background-color: #f7f7f7;
-      border: 1px solid #eee;
-      h3 {
-        max-width: 160px;
-        height: 18px;
-        overflow: hidden;
-        margin: 0;
-      }
-      i {
-        float: right;
-        margin-top: -14px;
-      }
-    }
-    .aside-content {
-      padding: 10px 10px;
-      border: 1px solid #eee;
-      border-top: none;
+.aside {
+  margin-bottom: 15px;
+  ::v-deep(.fixed-header-aside) {
+    position: fixed;
+    top: 0;
+    width: 210px;
+    z-index: 999;
+  }
+  .aside-header {
+    padding: 10px;
+    background-color: #f7f7f7;
+    border: 1px solid #eee;
+    h3 {
+      max-width: 160px;
+      height: 18px;
       overflow: hidden;
-      text-align: left;
-      &.pop-display {
-        position:fixed;
-        top:45px;
-        width: 210px;
-        z-index:999;
-        background-color: white;
-      }
+      margin: 0;
+    }
+    i {
+      float: right;
+      margin-top: -14px;
     }
   }
+  .aside-content {
+    padding: 10px 10px;
+    border: 1px solid #eee;
+    border-top: none;
+    overflow: hidden;
+    text-align: left;
+    &.pop-display {
+      position: fixed;
+      top: 45px;
+      width: 210px;
+      z-index: 999;
+      background-color: white;
+    }
+  }
+}
 </style>

@@ -1,15 +1,19 @@
 <template>
   <div class="twitter">
-    <div
-      v-if="Object.keys(detail).length > 0"
-      class="content"
-    >
+    <div v-if="Object.keys(detail).length > 0" class="content">
       <div v-if="!isAll" class="profile">
         <div class="name">
-          <div style="font-size: 19px; font-weight: 800; border: 0 solid black;">
+          <div style="font-size: 19px; font-weight: 800; border: 0 solid black">
             {{ detail.profile.name }}
           </div>
-          <div style="color: rgb(91, 112, 131) ; font-size: 15px; font-weight: 400; border: 0 solid black;">
+          <div
+            style="
+              color: rgb(91, 112, 131);
+              font-size: 15px;
+              font-weight: 400;
+              border: 0 solid black;
+            "
+          >
             {{ '@' + detail.profile.username }}
           </div>
         </div>
@@ -17,25 +21,31 @@
           {{ detail.profile.biography }}
         </div>
         <div class="follow">
-          <span style="font-weight: 700; color: rgb(15, 20, 25);">
+          <span style="font-weight: 700; color: rgb(15, 20, 25)">
             {{ detail.profile.followingcount }}
           </span>
-          <span style="color: rgb(91, 112, 131); margin-right: 20px"> 正在关注</span>
-          <span style="font-weight: 700; color: rgb(15, 20, 25);">
+          <span style="color: rgb(91, 112, 131); margin-right: 20px">
+            正在关注</span
+          >
+          <span style="font-weight: 700; color: rgb(15, 20, 25)">
             {{ detail.profile.followerscount }}
           </span>
-          <span style="color: rgb(91, 112, 131); margin-right: 20px"> 关注者</span>
+          <span style="color: rgb(91, 112, 131); margin-right: 20px">
+            关注者</span
+          >
         </div>
         <div class="link-top" />
       </div>
       <div class="tweets">
-        <div
-          v-for="(tweet, i) in detail.Tweets"
-          :key="i"
-        >
+        <div v-for="(tweet, i) in detail.Tweets" :key="i">
           <card
             v-if="isAll && usersObj"
-            :tweet="margeDetail(tweet, { avatar: usersObj[tweet.username].userinfo.avatar, name: usersObj[tweet.username].userinfo.name})"
+            :tweet="
+              margeDetail(tweet, {
+                avatar: usersObj[tweet.username].userinfo.avatar,
+                name: usersObj[tweet.username].userinfo.name,
+              })
+            "
             :isMobile="isMobile"
             @imgClick="imageClick"
           />
@@ -47,14 +57,12 @@
           />
         </div>
       </div>
-      <div style="font-size: 12px;text-align: center;padding: 5px">
+      <div style="font-size: 12px; text-align: center; padding: 5px">
         <a v-if="!endPage">
-          <span v-if="!loadingMore" @click="loadMore">
-            点击加载更多
-          </span>
+          <span v-if="!loadingMore" @click="loadMore"> 点击加载更多 </span>
           <LoadingOutlined v-else />
         </a>
-        <span v-else style="color: #aba8b1;">已经到底了</span>
+        <span v-else style="color: #aba8b1">已经到底了</span>
       </div>
     </div>
   </div>
@@ -70,80 +78,79 @@ export default {
   props: {
     idName: {
       type: String,
-      default: 'twitter'
+      default: 'twitter',
     },
     detail: {
       type: Object,
-      default () {
+      default() {
         return {}
-      }
+      },
     },
     isAll: {
       type: Boolean,
-      default: false
+      default: false,
     },
     usersObj: {
       type: Object,
-      default () {
+      default() {
         return {}
-      }
+      },
     },
     isMobile: {
       type: Boolean,
-      default: false
+      default: false,
     },
     endPage: {
       type: Boolean,
-      default: false
+      default: false,
     },
     loadingMore: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   methods: {
-    margeDetail (tweet, profile) {
+    margeDetail(tweet, profile) {
       return { avatar: profile.avatar, name: profile.name, ...tweet }
     },
-    loadMore () {
+    loadMore() {
       this.$emit('loadMore')
     },
-    imageClick (imgSrc) {
+    imageClick(imgSrc) {
       this.$emit('imgClick', imgSrc)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  .twitter {
-    margin-bottom: 15px;
-    color: rgba(0, 0, 0, 1.00);
+.twitter {
+  margin-bottom: 15px;
+  color: rgba(0, 0, 0, 1);
 
-    .content {
-      border: 1px solid #eee;
-      border-top: none;
-      overflow: hidden;
-      text-align: left;
-      font-size: 15px;
+  .content {
+    border: 1px solid #eee;
+    border-top: none;
+    overflow: hidden;
+    text-align: left;
+    font-size: 15px;
 
-      .profile {
-        .name {
-          padding: 10px 10px;
-        }
-        .biography {
-          padding: 0 10px;
-        }
-        .follow {
-          padding: 10px 10px;
-        }
-        .link-top {
-          width: 100%;
-          height: 1px;
-          border-top: solid #eee 1px;
-        }
-
+    .profile {
+      .name {
+        padding: 10px 10px;
+      }
+      .biography {
+        padding: 0 10px;
+      }
+      .follow {
+        padding: 10px 10px;
+      }
+      .link-top {
+        width: 100%;
+        height: 1px;
+        border-top: solid #eee 1px;
       }
     }
   }
+}
 </style>

@@ -1,20 +1,32 @@
 <template>
   <div class="container">
-    <image-preview v-if="imgPreview" @clickit="disablePreview" :imgSrc="imgSrc" />
+    <image-preview
+      v-if="imgPreview"
+      @clickit="disablePreview"
+      :imgSrc="imgSrc"
+    />
     <div :class="isMobile ? '' : 'w820'">
       <div class="bd">
         <div class="aside-wrap" v-if="!isMobile">
-          <aside-box
-            title="GH Twitter"
-            :need-fixed="true"
-            id-name="header"
-          >
+          <aside-box title="GH Twitter" :need-fixed="true" id-name="header">
             <template v-slot:btn>
               <span style="float: right">
-                <MinusOutlined v-if="ghToken" style="margin-right: 4px" @click="handleDelUsers"/>
-                <PlusOutlined v-if="ghToken" style="margin-right: 4px" @click="handleAddUsers" />
-                <SyncOutlined v-if="ghToken" style="margin-right: 4px" @click="actionScraper" />
-                <SettingFilled @click="tokenVisible = true"/>
+                <MinusOutlined
+                  v-if="ghToken"
+                  style="margin-right: 4px"
+                  @click="handleDelUsers"
+                />
+                <PlusOutlined
+                  v-if="ghToken"
+                  style="margin-right: 4px"
+                  @click="handleAddUsers"
+                />
+                <SyncOutlined
+                  v-if="ghToken"
+                  style="margin-right: 4px"
+                  @click="actionScraper"
+                />
+                <SettingFilled @click="tokenVisible = true" />
               </span>
             </template>
             <template v-slot:default v-if="usersList.length > 0">
@@ -23,8 +35,25 @@
                 :key="i"
                 @click="changeUser(i)"
               >
-                <a-badge :dot="needUpdate && (updateUser.findIndex(e => e === user.userinfo.username) >= 0)">
-                  <a :class="user.userinfo.username === currentUser ? 'current' : 'normal'">{{ user.userinfo.name ? user.userinfo.name : user.userinfo.username }}</a>
+                <a-badge
+                  :dot="
+                    needUpdate &&
+                    updateUser.findIndex((e) => e === user.userinfo.username) >=
+                      0
+                  "
+                >
+                  <a
+                    :class="
+                      user.userinfo.username === currentUser
+                        ? 'current'
+                        : 'normal'
+                    "
+                    >{{
+                      user.userinfo.name
+                        ? user.userinfo.name
+                        : user.userinfo.username
+                    }}</a
+                  >
                 </a-badge>
               </div>
             </template>
@@ -37,38 +66,78 @@
             :closable="false"
             :visible="sidebarOpen"
             :get-container="false"
-            @close="sidebarOpen=false"
+            @close="sidebarOpen = false"
           >
-            <p style="font-size: 12px; color: #aba8b1; text-align: center">{{ "更新时间: " + getTime(updateTime) }}</p>
-            <div
-              v-for="(user, i) in usersList"
-              :key="i"
-              @click="changeUser(i)"
-            >
-              <a-badge :dot="needUpdate && (updateUser.findIndex(e => e === user.userinfo.username) >= 0)">
-                <a :class="user.userinfo.username === currentUser ? 'current' : 'normal'">{{ user.userinfo.name ? user.userinfo.name : user.userinfo.username }}</a>
+            <p style="font-size: 12px; color: #aba8b1; text-align: center">
+              {{ '更新时间: ' + getTime(updateTime) }}
+            </p>
+            <div v-for="(user, i) in usersList" :key="i" @click="changeUser(i)">
+              <a-badge
+                :dot="
+                  needUpdate &&
+                  updateUser.findIndex((e) => e === user.userinfo.username) >= 0
+                "
+              >
+                <a
+                  :class="
+                    user.userinfo.username === currentUser
+                      ? 'current'
+                      : 'normal'
+                  "
+                  >{{
+                    user.userinfo.name
+                      ? user.userinfo.name
+                      : user.userinfo.username
+                  }}</a
+                >
               </a-badge>
             </div>
           </a-drawer>
         </div>
-        <div v-if="usersList.length > 0 && usersListObj[currentUser]" :class="isMobile ? 'tweets-mobile' : 'tweets'">
-          <fixed-header id-name="twitter" :style-class-name="isMobile ? 'fixed-header-mobile' : 'fixed-header'">
+        <div
+          v-if="usersList.length > 0 && usersListObj[currentUser]"
+          :class="isMobile ? 'tweets-mobile' : 'tweets'"
+        >
+          <fixed-header
+            id-name="twitter"
+            :style-class-name="
+              isMobile ? 'fixed-header-mobile' : 'fixed-header'
+            "
+          >
             <div class="header">
               <span v-if="isMobile" style="margin-right: 10px">
                 <a-badge :dot="needUpdate">
-                  <MenuFoldOutlined v-if="sidebarOpen" class="menu" @click="sidebarOpen=!sidebarOpen" />
-                  <MenuUnfoldOutlined v-else class="menu" @click="sidebarOpen=!sidebarOpen" />
+                  <MenuFoldOutlined
+                    v-if="sidebarOpen"
+                    class="menu"
+                    @click="sidebarOpen = !sidebarOpen"
+                  />
+                  <MenuUnfoldOutlined
+                    v-else
+                    class="menu"
+                    @click="sidebarOpen = !sidebarOpen"
+                  />
                 </a-badge>
               </span>
-              <span v-if="currentUser === usersList[0].userinfo.username" class="name">全部</span>
-              <span v-else class="name">{{ usersListObj[currentUser].profile.name }}</span>
-              <span style="font-weight: 700; color: rgb(15, 20, 25);">
+              <span
+                v-if="currentUser === usersList[0].userinfo.username"
+                class="name"
+                >全部</span
+              >
+              <span v-else class="name">{{
+                usersListObj[currentUser].profile.name
+              }}</span>
+              <span style="font-weight: 700; color: rgb(15, 20, 25)">
                 {{ usersListObj[currentUser].userinfo.tweetscount }}
               </span>
-              <span style="color: rgb(91, 112, 131); margin-right: 20px"> 推文</span>
+              <span style="color: rgb(91, 112, 131); margin-right: 20px">
+                推文</span
+              >
               <span v-if="isMobile" class="floating">
                 <a-dropdown :trigger="['click']">
-                  <span @click="e => e.preventDefault()"><SettingFilled style="font-size: 20px;" /></span>
+                  <span @click="(e) => e.preventDefault()"
+                    ><SettingFilled style="font-size: 20px"
+                  /></span>
                   <template #overlay>
                     <a-menu>
                       <a-menu-item v-if="ghToken" key="0">
@@ -89,7 +158,9 @@
                 </a-dropdown>
               </span>
               <div v-else class="floating">
-                <p style="color: rgb(91, 112, 131);">{{ "更新时间: " + getTime(updateTime) }}</p>
+                <p style="color: rgb(91, 112, 131)">
+                  {{ '更新时间: ' + getTime(updateTime) }}
+                </p>
               </div>
             </div>
           </fixed-header>
@@ -129,7 +200,10 @@
         @ok="setGHToken"
       >
         <p>切勿泄露 token!</p>
-        <p>请输入具有 repo 权限的 github personal access token, 设置 token 后可手动触发更新和增加删除用户列表.</p>
+        <p>
+          请输入具有 repo 权限的 github personal access token, 设置 token
+          后可手动触发更新和增加删除用户列表.
+        </p>
         <!-- eslint-disable-next-line -->
         <a-input v-model:value="inputToken" placeholder="github personal access token" />
       </a-modal>
@@ -160,7 +234,14 @@
   </div>
 </template>
 <script>
-import { ref, getCurrentInstance, computed, onMounted, onUnmounted, watch } from 'vue'
+import {
+  ref,
+  getCurrentInstance,
+  computed,
+  onMounted,
+  onUnmounted,
+  watch,
+} from 'vue'
 import { useStore } from 'vuex'
 import twitterApi from '@/api/twitter/index'
 import AsideBox from '@/components/AsideBox/index.vue'
@@ -176,7 +257,7 @@ import {
   SettingFilled,
   SyncOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
 } from '@ant-design/icons-vue'
 
 export default {
@@ -190,9 +271,9 @@ export default {
     FixedHeader,
     MinusOutlined,
     MenuFoldOutlined,
-    MenuUnfoldOutlined
+    MenuUnfoldOutlined,
   },
-  setup (props, { slots }) {
+  setup() {
     const { ctx, proxy } = getCurrentInstance()
     const updateUser = ref([])
     const usersList = ref([])
@@ -220,11 +301,20 @@ export default {
     const repoUrl = process.env.VUE_APP_REPO_URL
     const delUserData = computed(() => {
       if (usersList.value.length > 0) {
-        return usersList.value.slice(1).map(item => { return item.userinfo.username })
+        return usersList.value.slice(1).map((item) => {
+          return item.userinfo.username
+        })
+      } else {
+        return []
       }
     })
     const isEndPage = computed(() => {
-      const pages = Math.ceil(parseInt(usersListObj.value[currentUser.value].userinfo.tweetscount, 10) / settings.pageSize)
+      const pages = Math.ceil(
+        parseInt(
+          usersListObj.value[currentUser.value].userinfo.tweetscount,
+          10
+        ) / settings.pageSize
+      )
       return curPage.value === pages
     })
 
@@ -233,7 +323,7 @@ export default {
 
     const onExit = () => {
       ctx.$router.push({
-        path: '/login'
+        path: '/login',
       })
     }
 
@@ -250,66 +340,72 @@ export default {
       if (triggerUpdate.value) {
         proxy.$message.warning({
           content: '更新请求未完毕，请耐心等待',
-          duration: 3
+          duration: 3,
         })
       } else if (triggerChangeUsers.value) {
         proxy.$message.warning({
           content: '更改用户请求未完毕，请耐心等待',
-          duration: 3
+          duration: 3,
         })
       } else {
-        ghApi.request(`POST ${repoUrl}`, {
-          event_type: 'scraper'
-        }).then(res => {
-          triggerUpdate.value = true
-          proxy.$message.success({
-            content: '更新请求已发出，请等待响应',
-            duration: 3
+        ghApi
+          .request(`POST ${repoUrl}`, {
+            event_type: 'scraper',
           })
-        }).catch(err => {
-          if (err.status === 401) {
-            proxy.$message.error({
-              content: `token 权限有误, ${err.status} ${err.message}`,
-              duration: 3
+          .then(() => {
+            triggerUpdate.value = true
+            proxy.$message.success({
+              content: '更新请求已发出，请等待响应',
+              duration: 3,
             })
-          } else {
-            proxy.$message.error({
-              content: `${err.status} ${err.message}`,
-              duration: 3
-            })
-          }
-          console.log(err)
-        })
+          })
+          .catch((err) => {
+            if (err.status === 401) {
+              proxy.$message.error({
+                content: `token 权限有误, ${err.status} ${err.message}`,
+                duration: 3,
+              })
+            } else {
+              proxy.$message.error({
+                content: `${err.status} ${err.message}`,
+                duration: 3,
+              })
+            }
+            console.log(err)
+          })
       }
     }
 
     const actionChangeUsers = (type, users) => {
-      ghApi.request(`POST ${repoUrl}`, {
-        event_type: type,
-        client_payload: {
-          users: users
-        }
-      }).then(res => {
-        triggerChangeUsers.value = true
-        const content = type === 'addusers' ? '添加' : '删除'
-        proxy.$message.success({
-          content: content + '用户请求已发出，请等待响应',
-          duration: 3
+      ghApi
+        .request(`POST ${repoUrl}`, {
+          event_type: type,
+          client_payload: {
+            users: users,
+          },
         })
-      }).catch(err => {
-        if (err.status === 401) {
-          proxy.$message.error({
-            content: `token 权限有误, ${err.status} ${err.message}`,
-            duration: 3
+        .then(() => {
+          triggerChangeUsers.value = true
+          const content = type === 'addusers' ? '添加' : '删除'
+          proxy.$message.success({
+            content: content + '用户请求已发出，请等待响应',
+            duration: 3,
           })
-        } else {
-          proxy.$message.error({
-            content: `${err.status} ${err.message}`,
-            duration: 3
-          })
-        }
-        console.log(err)
-      })
+        })
+        .catch((err) => {
+          if (err.status === 401) {
+            proxy.$message.error({
+              content: `token 权限有误, ${err.status} ${err.message}`,
+              duration: 3,
+            })
+          } else {
+            proxy.$message.error({
+              content: `${err.status} ${err.message}`,
+              duration: 3,
+            })
+          }
+          console.log(err)
+        })
     }
 
     const setGHToken = () => {
@@ -327,12 +423,12 @@ export default {
       if (triggerUpdate.value) {
         proxy.$message.warning({
           content: '更新请求未完毕，请耐心等待',
-          duration: 3
+          duration: 3,
         })
       } else if (triggerChangeUsers.value) {
         proxy.$message.warning({
           content: '更改用户请求未完毕，请耐心等待',
-          duration: 3
+          duration: 3,
         })
       } else {
         addUserVisible.value = true
@@ -343,12 +439,12 @@ export default {
       if (triggerUpdate.value) {
         proxy.$message.warning({
           content: '更新请求未完毕，请耐心等待',
-          duration: 3
+          duration: 3,
         })
       } else if (triggerChangeUsers.value) {
         proxy.$message.warning({
           content: '更改用户请求未完毕，请耐心等待',
-          duration: 3
+          duration: 3,
         })
       } else {
         delUserVisible.value = true
@@ -357,13 +453,16 @@ export default {
 
     const addUsersAction = () => {
       addUserVisible.value = false
-      const users = inputUsers.value.replace(/@/g, '').replace(/\s+/g, ',').replace(/^,*|,*$/g, '')
+      const users = inputUsers.value
+        .replace(/@/g, '')
+        .replace(/\s+/g, ',')
+        .replace(/^,*|,*$/g, '')
       if (users) {
         actionChangeUsers('addusers', users)
       } else {
         proxy.$message.warning({
           content: '用户名为空',
-          duration: 3
+          duration: 3,
         })
       }
       inputUsers.value = ''
@@ -377,7 +476,7 @@ export default {
       } else {
         proxy.$message.warning({
           content: '未选择用户',
-          duration: 3
+          duration: 3,
         })
       }
       delUserSelect.value = []
@@ -398,7 +497,9 @@ export default {
       if (res && res.length) {
         const len = res.length
         list = list.concat(res)
-        let lasttweettime = 0; let lastupdatetime = 0; let tweetscount = 0
+        let lasttweettime = 0
+        let lastupdatetime = 0
+        let tweetscount = 0
         for (let i = 0; i < len; i++) {
           const ltt = list[i].userinfo.lasttweettime
           const lut = list[i].userinfo.lastupdatetime
@@ -411,92 +512,117 @@ export default {
           }
           tweetscount += tct
         }
-        const all = { userinfo: { username: '@all', name: 'All', lasttweettime, lastupdatetime, tweetscount } }
+        const all = {
+          userinfo: {
+            username: '@all',
+            name: 'All',
+            lasttweettime,
+            lastupdatetime,
+            tweetscount,
+          },
+        }
         list.unshift(all)
       }
       return list
     }
 
     const dataInit = () => {
-      twitterApi.getUsersData().then(res => {
-        const list = unshiftUserData(res)
-        usersList.value = list
-        if (!list.length) {
-          return
-        }
-        usersListObj.value = arrToObj(list, 'userinfo.username')
-        currentUser.value = list[0].userinfo.username
-        updateUser.value.push(currentUser.value)
-        twitterApi.getUpdateInfo().then(info => {
-          updateTime.value = info.updatetime
-        }).catch(e => {
-          console.log(e)
+      twitterApi
+        .getUsersData()
+        .then((res) => {
+          const list = unshiftUserData(res)
+          usersList.value = list
+          if (!list.length) {
+            return
+          }
+          usersListObj.value = arrToObj(list, 'userinfo.username')
+          currentUser.value = list[0].userinfo.username
+          updateUser.value.push(currentUser.value)
+          twitterApi
+            .getUpdateInfo()
+            .then((info) => {
+              updateTime.value = info.updatetime
+            })
+            .catch((e) => {
+              console.log(e)
+            })
+          for (let i = 0; i < updateUser.value.length; i++) {
+            getUserTweets(updateUser.value[i], 1)
+          }
         })
-        for (let i = 0; i < updateUser.value.length; i++) {
-          getUserTweets(updateUser.value[i], 1)
-        }
-      }).catch(e => {
-        console.log(e)
-        usersList.value = []
-      })
+        .catch((e) => {
+          console.log(e)
+          usersList.value = []
+        })
     }
 
     const getUpdateInfo = () => {
-      twitterApi.getUpdateInfo().then(res => {
-        if (updateTime.value < res.updatetime) {
-          updateTime.value = res.updatetime
-          if (res.isupdate) {
-            needUpdate.value = res.isupdate
-            updateUser.value = updateUser.value.concat(res.users)
-            updateUser.value = uniqueArr(updateUser.value)
+      twitterApi
+        .getUpdateInfo()
+        .then((res) => {
+          if (updateTime.value < res.updatetime) {
+            updateTime.value = res.updatetime
+            if (res.isupdate) {
+              needUpdate.value = res.isupdate
+              updateUser.value = updateUser.value.concat(res.users)
+              updateUser.value = uniqueArr(updateUser.value)
+            }
           }
-        }
-      }).catch(e => {
-        console.log(e)
-        // usersList.value = []
-      })
+        })
+        .catch((e) => {
+          console.log(e)
+          // usersList.value = []
+        })
     }
 
     const getUserList = () => {
-      twitterApi.getUsersData().then(res => {
-        const list = unshiftUserData(res)
-        usersList.value = list
-        if (!list.length) {
-          return
-        }
-        usersListObj.value = arrToObj(list, 'userinfo.username')
-      }).catch(e => {
-        console.log(e)
-        // usersList.value = []
-      })
+      twitterApi
+        .getUsersData()
+        .then((res) => {
+          const list = unshiftUserData(res)
+          usersList.value = list
+          if (!list.length) {
+            return
+          }
+          usersListObj.value = arrToObj(list, 'userinfo.username')
+        })
+        .catch((e) => {
+          console.log(e)
+          // usersList.value = []
+        })
     }
 
     const getUserTweets = (user, page) => {
-      twitterApi.getTweetsData(user, page).then(data => {
-        if (curPage.value === 1) {
-          usersListObj.value[user].Tweets = data
-          // usersData.value[user] = usersListObj.value[user]
-        } else {
-          usersListObj.value[user].Tweets = usersListObj.value[user].Tweets.concat(data)
-        }
-        const idx = updateUser.value.findIndex(e => e === user)
-        if (idx >= 0) {
-          updateUser.value.splice(idx, 1)
-        }
-        if (updateUser.value.length === 0) {
-          needUpdate.value = false
-        }
-        if (loadingMore.value) {
+      twitterApi
+        .getTweetsData(user, page)
+        .then((data) => {
+          if (curPage.value === 1) {
+            usersListObj.value[user].Tweets = data
+            // usersData.value[user] = usersListObj.value[user]
+          } else {
+            usersListObj.value[user].Tweets = usersListObj.value[
+              user
+            ].Tweets.concat(data)
+          }
+          const idx = updateUser.value.findIndex((e) => e === user)
+          if (idx >= 0) {
+            updateUser.value.splice(idx, 1)
+          }
+          if (updateUser.value.length === 0) {
+            needUpdate.value = false
+          }
+          if (loadingMore.value) {
+            loadingMore.value = false
+          }
+          // nextTick(() => {
+          //   checkFixed.value++
+          // })
+        })
+        .catch((err) => {
           loadingMore.value = false
-        }
-        // nextTick(() => {
-        //   checkFixed.value++
-        // })
-      }).catch(err => {
-        loadingMore.value = false
-        curPage.value--
-        console.log(err)
-      })
+          curPage.value--
+          console.log(err)
+        })
     }
 
     const changeUser = (i) => {
@@ -523,11 +649,13 @@ export default {
       return parseTime(unix)
     }
 
-    const preD = function (e) { e.preventDefault() }
+    const preD = function (e) {
+      e.preventDefault()
+    }
 
     onMounted(() => {
       ghApi = new Octokit({
-        auth: ghToken.value
+        auth: ghToken.value,
       })
       dataInit()
       timer = window.setInterval(() => {
@@ -546,14 +674,14 @@ export default {
         triggerUpdate.value = false
         proxy.$message.success({
           content: '更新请求已完毕',
-          duration: 3
+          duration: 3,
         })
       }
       if (triggerChangeUsers.value) {
         triggerChangeUsers.value = false
         proxy.$message.success({
           content: '更改用户请求已完毕',
-          duration: 3
+          duration: 3,
         })
         getUserList()
       }
@@ -561,7 +689,7 @@ export default {
 
     watch(ghToken, () => {
       ghApi = new Octokit({
-        auth: ghToken.value
+        auth: ghToken.value,
       })
     })
 
@@ -619,113 +747,113 @@ export default {
       getTime,
       sidebarOpen,
       getNextPage,
-      loadingMore
+      loadingMore,
     }
-  }
+  },
 }
 </script>
 <style lang="less" scoped>
-  .container {
-    font-size: 12px;
-    color: #666;
+.container {
+  font-size: 12px;
+  color: #666;
 
-    .w820 {
-      width: 820px;
-      margin: 0 auto;
+  .w820 {
+    width: 820px;
+    margin: 0 auto;
+  }
+
+  .bd {
+    overflow: hidden;
+    .aside-wrap {
+      float: left;
+      width: 210px;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 20px;
     }
 
-    .bd {
-      overflow: hidden;
-      .aside-wrap {
-        float: left;
-        width: 210px;
-        font-size: 15px;
-        font-weight: 500;
-        margin-bottom: 20px;
-      }
-
-      .tweets-body() {
-        .header {
-          padding: 10px;
-          background-color: #f7f7f7;
-          border: 1px solid #eee;
-
-          .menu {
-            font-size: 20px;
-          }
-          .name {
-            font-size: 15px;
-            font-weight: 800;
-            border: 0 solid black;
-            margin-right: 10px
-          }
-          .floating {
-            display: table;
-            float: right;
-            height: 23px;
-          }
-          .floating p {
-            display: table-cell;
-            vertical-align: middle;
-            text-align: center;
-          }
-        }
-
-        .pagination {
-          text-align: center;
-          padding: 4px 0;
-        }
-      }
-
-      .tweets {
-        float: right;
-        width: 600px;
-        min-height: 220px;
-
-        .tweets-body()
-      }
-
-      .tweets-mobile {
-        width: 100%;
-        min-height: 220px;
-
-        .tweets-body()
-      }
-
-      :deep(.current) {
-        color: rgb(29, 161, 242);
-      }
-      :deep(.normal) {
-        color: black;
-      }
-      :deep(.fixed-header) {
-        position:fixed;
-        top:0;
-        width: 600px;
-        z-index:999;
-      }
-      :deep(.fixed-header-mobile) {
-        position:fixed;
-        top:0;
-        width: 100%;
-        z-index:999;
-      }
-      :deep(.fixed-footer) {
-        position:fixed;
-        bottom:0;
-        z-index:999;
-        border: 1px solid #eee;
-        background-color:#f7f7f7ee;
-      }
-      :deep(.ant-drawer-header) {
-        padding: 11px 10px
-      }
-      :deep(.ant-drawer-body) {
+    .tweets-body() {
+      .header {
         padding: 10px;
+        background-color: #f7f7f7;
+        border: 1px solid #eee;
+
+        .menu {
+          font-size: 20px;
+        }
+        .name {
+          font-size: 15px;
+          font-weight: 800;
+          border: 0 solid black;
+          margin-right: 10px;
+        }
+        .floating {
+          display: table;
+          float: right;
+          height: 23px;
+        }
+        .floating p {
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+        }
       }
-      :deep(.ant-divider-horizontal.ant-divider-with-text-center) {
-          margin: 5px 0;
+
+      .pagination {
+        text-align: center;
+        padding: 4px 0;
       }
+    }
+
+    .tweets {
+      float: right;
+      width: 600px;
+      min-height: 220px;
+
+      .tweets-body();
+    }
+
+    .tweets-mobile {
+      width: 100%;
+      min-height: 220px;
+
+      .tweets-body();
+    }
+
+    :deep(.current) {
+      color: rgb(29, 161, 242);
+    }
+    :deep(.normal) {
+      color: black;
+    }
+    :deep(.fixed-header) {
+      position: fixed;
+      top: 0;
+      width: 600px;
+      z-index: 999;
+    }
+    :deep(.fixed-header-mobile) {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 999;
+    }
+    :deep(.fixed-footer) {
+      position: fixed;
+      bottom: 0;
+      z-index: 999;
+      border: 1px solid #eee;
+      background-color: #f7f7f7ee;
+    }
+    :deep(.ant-drawer-header) {
+      padding: 11px 10px;
+    }
+    :deep(.ant-drawer-body) {
+      padding: 10px;
+    }
+    :deep(.ant-divider-horizontal.ant-divider-with-text-center) {
+      margin: 5px 0;
     }
   }
+}
 </style>

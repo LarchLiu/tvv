@@ -6,17 +6,17 @@ import { message } from 'ant-design-vue'
 const service = axios.create({
   baseURL: process.env.VUE_APP_GLOB_API_URL, // url = base url + request url
   withCredentials: true, // send cookies when cross-domain requests
-  timeout: 30000 // request timeout
+  timeout: 30000, // request timeout
 })
 
 // request interceptor
 service.interceptors.request.use(
-  config => {
+  (config) => {
     // do something before request is sent
 
     return config
   },
-  error => {
+  (error) => {
     // do something with request error
     console.log(error) // for debug
     return Promise.reject(error)
@@ -28,32 +28,32 @@ service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
-  */
+   */
   // response => response.data,
   /**
    * Determine the request status by custom code
    * Here is just an example
    * You can also judge the status by HTTP Status Code
    */
-  response => {
+  (response) => {
     const res = response.data
     if (!(res.err === null || res.err === undefined)) {
-      const msg = ((res.err.message) ? res.err.message : res.err.code)
+      const msg = res.err.message ? res.err.message : res.err.code
       message.error({
         content: msg || 'Error',
-        duration: 5
+        duration: 5,
       })
       return Promise.reject(res.err || 'Error')
     } else {
       return res
     }
   },
-  error => {
+  (error) => {
     console.log('err' + error) // for debug
     if (error.response) {
       const data = error.response.data
       if (data.err) {
-        error.message = ((data.err.message) ? data.err.message : data.err.code)
+        error.message = data.err.message ? data.err.message : data.err.code
         console.log('error message ' + error.message)
       }
       if (error.response.status === 401) {
@@ -72,7 +72,7 @@ service.interceptors.response.use(
     }
     message.error({
       content: error.message,
-      duration: 5
+      duration: 5,
     })
     return Promise.reject(error)
   }

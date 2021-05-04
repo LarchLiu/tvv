@@ -1,9 +1,9 @@
 const GithubToken = 'gh-token'
 
-export function getGHToken () {
+export function getGHToken() {
   return window.localStorage.getItem(GithubToken)
 }
 
-export function setGHToken (token) {
+export function setGHToken(token) {
   return window.localStorage.setItem(GithubToken, token)
 }

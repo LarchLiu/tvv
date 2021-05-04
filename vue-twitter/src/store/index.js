@@ -4,7 +4,7 @@ import { getGHToken, setGHToken } from '@/utils/local-storage'
 
 const state = {
   gh_token: getGHToken(),
-  is_mobile: false
+  is_mobile: false,
 }
 
 const mutations = {
@@ -13,30 +13,30 @@ const mutations = {
   },
   SET_IS_MOBILE: (state, isMobile) => {
     state.is_mobile = isMobile
-  }
+  },
 }
 
 const actions = {
-  setGHToken ({ commit }, token) {
+  setGHToken({ commit }, token) {
     const _token = Base64.encode(token)
     setGHToken(_token)
     commit('SET_GH_TOKEN', _token)
   },
-  setIsMobile ({ commit }, isMobile) {
+  setIsMobile({ commit }, isMobile) {
     commit('SET_IS_MOBILE', isMobile)
-  }
+  },
 }
 
 const getters = {
-  ghToken: state => state.gh_token ? Base64.decode(state.gh_token) : '',
-  isMobile: state => state.is_mobile
+  ghToken: (state) => (state.gh_token ? Base64.decode(state.gh_token) : ''),
+  isMobile: (state) => state.is_mobile,
 }
 
 const store = createStore({
   actions,
   state,
   mutations,
-  getters
+  getters,
 })
 
 export default store

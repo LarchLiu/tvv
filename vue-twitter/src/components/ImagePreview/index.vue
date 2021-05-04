@@ -3,20 +3,20 @@
     <!-- 遮罩层 -->
     <div class="img-mask"></div>
     <div class="img-preview">
-      <img :src="imgSrc" @click="imgClick">
+      <img :src="imgSrc" @click="imgClick" />
     </div>
   </div>
 </template>
 <script>
 export default {
   props: ['imgSrc'],
-  data () {
+  data() {
     return {
-      imgClicked: false
+      imgClicked: false,
     }
   },
   methods: {
-    bigImg () {
+    bigImg() {
       // 发送事件
       if (this.imgClicked) {
         this.imgClicked = false
@@ -24,10 +24,10 @@ export default {
         this.$emit('clickit')
       }
     },
-    imgClick () {
+    imgClick() {
       this.imgClicked = true
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="less" scoped>

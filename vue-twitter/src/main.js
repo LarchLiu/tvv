@@ -21,7 +21,7 @@ import {
   Form,
   Menu,
   Modal,
-  message
+  message,
 } from 'ant-design-vue'
 
 import './registerServiceWorker'
@@ -46,7 +46,4 @@ app
   .use(Modal)
 
 // 插件注入
-app.use(router)
-  .use(store)
-  .use(Vue3VideoPlayer)
-  .mount('#app')
+app.use(router).use(store).use(Vue3VideoPlayer).mount('#app')
