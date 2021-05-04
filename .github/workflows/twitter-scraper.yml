@@ -17,7 +17,7 @@ jobs:
         uses: LarchLiu/cancel_previous_runs@V1.1.0
         with:
           cancel_previous: "true"
-          skip_after_successful_duplicate": "false"
+          skip_after_successful_duplicate: "false"
 
   scraper:
     needs: cancel_previous
