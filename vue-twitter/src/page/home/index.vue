@@ -393,34 +393,39 @@ export default {
       delUserSelect.value = []
     }
 
-    const unshiftUserData = () => {
-      const len = usersList.value.length
-      let lasttweettime = 0; let lastupdatetime = 0; let tweetscount = 0
-      for (let i = 0; i < len; i++) {
-        const ltt = usersList.value[i].lasttweettime
-        const lut = usersList.value[i].lastupdatetime
-        const tct = usersList.value[i].tweetscount
-        if (ltt > lasttweettime) {
-          lasttweettime = ltt
+    const unshiftUserData = (res) => {
+      let list = []
+      if (res && res.length) {
+        const len = res.length
+        list = list.concat(res)
+        let lasttweettime = 0; let lastupdatetime = 0; let tweetscount = 0
+        for (let i = 0; i < len; i++) {
+          const ltt = list[i].lasttweettime
+          const lut = list[i].lastupdatetime
+          const tct = list[i].tweetscount
+          if (ltt > lasttweettime) {
+            lasttweettime = ltt
+          }
+          if (lut > lastupdatetime) {
+            lastupdatetime = lut
+          }
+          tweetscount += tct
         }
-        if (lut > lastupdatetime) {
-          lastupdatetime = lut
-        }
-        tweetscount += tct
+        const all = { userinfo: { username: '@all', name: 'All', lasttweettime, lastupdatetime, tweetscount } }
+        list = list.unshift(all)
       }
-      const all = { userinfo: { username: '@all', name: 'All', lasttweettime, lastupdatetime, tweetscount } }
-      usersList.value = usersList.value.unshift(all)
+      return list
     }
 
     const dataInit = () => {
       twitterApi.getUsersData().then(res => {
-        usersList.value = res
-        if (!res) {
+        const list = unshiftUserData(res)
+        usersList.value = list
+        if (!list.length) {
           return
         }
-        unshiftUserData()
-        usersListObj.value = arrToObj(usersList.value, 'userinfo.username')
-        currentUser.value = usersList.value[0].userinfo.username
+        usersListObj.value = arrToObj(list, 'userinfo.username')
+        currentUser.value = list[0].userinfo.username
         updateUser.value.push(currentUser.value)
         twitterApi.getUpdateInfo().then(info => {
           updateTime.value = info.updatetime
@@ -454,12 +459,12 @@ export default {
 
     const getUserList = () => {
       twitterApi.getUsersData().then(res => {
-        usersList.value = res
-        if (!res) {
+        const list = unshiftUserData(res)
+        usersList.value = list
+        if (!list.length) {
           return
         }
-        unshiftUserData()
-        usersListObj.value = arrToObj(usersList.value, 'userinfo.username')
+        usersListObj.value = arrToObj(list, 'userinfo.username')
       }).catch(e => {
         console.log(e)
         // usersList.value = []
