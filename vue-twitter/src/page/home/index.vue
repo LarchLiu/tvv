@@ -400,9 +400,9 @@ export default {
         list = list.concat(res)
         let lasttweettime = 0; let lastupdatetime = 0; let tweetscount = 0
         for (let i = 0; i < len; i++) {
-          const ltt = list[i].lasttweettime
-          const lut = list[i].lastupdatetime
-          const tct = list[i].tweetscount
+          const ltt = list[i].userinfo.lasttweettime
+          const lut = list[i].userinfo.lastupdatetime
+          const tct = parseInt(list[i].userinfo.tweetscount, 10)
           if (ltt > lasttweettime) {
             lasttweettime = ltt
           }
@@ -412,7 +412,7 @@ export default {
           tweetscount += tct
         }
         const all = { userinfo: { username: '@all', name: 'All', lasttweettime, lastupdatetime, tweetscount } }
-        list = list.unshift(all)
+        list.unshift(all)
       }
       return list
     }

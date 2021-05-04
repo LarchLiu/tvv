@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
 /* eslint-disable consistent-return */
-const connectToDatabase = require('../db');
-const UpdateInfo = require('../models/UpdateInfo');
+const connectToDatabase = require('../../db');
+const UpdateInfo = require('../../models/UpdateInfo');
 
 exports.execute = async function (req, res) {
   if (req.method.toLowerCase() === 'get') {

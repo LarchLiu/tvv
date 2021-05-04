@@ -12,9 +12,9 @@ app.use(logger('combined'));
 app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use('/api/:action', (req, res, next) => {
-  const act = req.params.action;
-  const actionPath = `/src/api/${act}`;
+app.use('/api/:ver/:action', (req, res, next) => {
+  const { ver, action } = req.params;
+  const actionPath = `/src/api/${ver}/${action}`;
 
   const realPath = path.join(__dirname, actionPath);
   fs.access(`${realPath}.js`, fs.constants.R_OK, (err) => {
