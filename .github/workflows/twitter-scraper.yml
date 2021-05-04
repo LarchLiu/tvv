@@ -1,7 +1,7 @@
 name: twitter scraper
 on:
-  # schedule:
-  #   - cron: "0 0/4 * * *"
+  schedule:
+    - cron: "0 0/4 * * *"
   repository_dispatch:
     types: [scraper, addusers, delusers]
   workflow_dispatch:
@@ -17,6 +17,7 @@ jobs:
         uses: LarchLiu/cancel_previous_runs@V1.1.0
         with:
           cancel_previous: "true"
+          skip_after_successful_duplicate": "false"
 
   scraper:
     needs: cancel_previous

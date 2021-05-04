@@ -8,7 +8,8 @@ function getUsersData () {
 }
 
 function getTweetsData (user, page) {
-  const apiPath = `/tweets?page=${page - 1}&pageSize=${settings.pageSize}&username=${user}`
+  const username = user === '@all' ? '' : user
+  const apiPath = `/tweets?page=${page - 1}&pageSize=${settings.pageSize}&username=${username}`
 
   return API.getRequest(apiPath)
 }

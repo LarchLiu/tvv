@@ -15,7 +15,11 @@ exports.execute = async function (req, res) {
       if (id) {
         tweets = await Tweet.find({ id });
       } else {
-        tweets = await Tweet.find({ username }).skip(page * pageSize).limit(pageSize).sort({ timestamp: -1 });
+        if (username) {
+          tweets = await Tweet.find({ username }).skip(page * pageSize).limit(pageSize).sort({ timestamp: -1 });
+        } else {
+          tweets = await Tweet.find().skip(page * pageSize).limit(pageSize).sort({ timestamp: -1 });
+        }
       }
       return res.status(200).json({ data: tweets });
     } catch (err) {

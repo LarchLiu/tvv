@@ -393,11 +393,34 @@ export default {
       delUserSelect.value = []
     }
 
+    const unshiftUserData = () => {
+      const len = usersList.value.length
+      let lasttweettime = 0; let lastupdatetime = 0; let tweetscount = 0
+      for (let i = 0; i < len; i++) {
+        const ltt = usersList.value[i].lasttweettime
+        const lut = usersList.value[i].lastupdatetime
+        const tct = usersList.value[i].tweetscount
+        if (ltt > lasttweettime) {
+          lasttweettime = ltt
+        }
+        if (lut > lastupdatetime) {
+          lastupdatetime = lut
+        }
+        tweetscount += tct
+      }
+      const all = { userinfo: { username: '@all', name: 'All', lasttweettime, lastupdatetime, tweetscount } }
+      usersList.value = usersList.value.unshift(all)
+    }
+
     const dataInit = () => {
       twitterApi.getUsersData().then(res => {
         usersList.value = res
-        usersListObj.value = arrToObj(res, 'userinfo.username')
-        currentUser.value = res[0].userinfo.username
+        if (!res) {
+          return
+        }
+        unshiftUserData()
+        usersListObj.value = arrToObj(usersList.value, 'userinfo.username')
+        currentUser.value = usersList.value[0].userinfo.username
         updateUser.value.push(currentUser.value)
         twitterApi.getUpdateInfo().then(info => {
           updateTime.value = info.updatetime
@@ -432,7 +455,11 @@ export default {
     const getUserList = () => {
       twitterApi.getUsersData().then(res => {
         usersList.value = res
-        usersListObj.value = arrToObj(res, 'userinfo.username')
+        if (!res) {
+          return
+        }
+        unshiftUserData()
+        usersListObj.value = arrToObj(usersList.value, 'userinfo.username')
       }).catch(e => {
         console.log(e)
         // usersList.value = []
@@ -461,6 +488,8 @@ export default {
         //   checkFixed.value++
         // })
       }).catch(err => {
+        loadingMore.value = false
+        curPage.value--
         console.log(err)
       })
     }
