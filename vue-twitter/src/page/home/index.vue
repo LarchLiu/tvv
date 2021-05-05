@@ -274,10 +274,13 @@ export default {
   },
   setup() {
     const { ctx, proxy } = getCurrentInstance()
-    const pusherKey = process.env.VUE_APP_PUSHER_KEY
+    const {
+      VUE_APP_PUSHER_KEY: pusherKey,
+      VUE_APP_PUSHER_CLUSTER: cluster,
+    } = process.env.VUE_APP_PUSHER_KEY
     // eslint-disable-next-line no-undef
     const pusher = new Pusher(pusherKey, {
-      cluster: 'ap3',
+      cluster,
     })
     const updateUser = ref([])
     const usersList = ref([])
@@ -676,8 +679,13 @@ export default {
       dataInit()
       const channel = pusher.subscribe('update-info')
       channel.bind('scraper-post', function (data) {
-        if (data.updateInfo) {
-          const updateInfo = data.updateInfo
+        console.log(data)
+        if (data.Info) {
+          const updateInfo = data.Info
+          const keys = Object.keys(updateInfo)
+          keys.forEach((key) => {
+            updateInfo[key.toLowerCase()] = updateInfo[key]
+          })
           if (updateTime.value < updateInfo.updatetime) {
             updateTime.value = updateInfo.updatetime
             if (updateInfo.isupdate) {
@@ -701,7 +709,7 @@ export default {
               duration: 3,
             })
           }
-          if (data.type === 'changeusers') {
+          if (data.Type === 'changeusers') {
             getUserList()
           }
         }

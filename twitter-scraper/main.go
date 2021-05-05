@@ -183,5 +183,12 @@ func main() {
 	updateInfo := utils.UpdateInfo{UpdateTime: time.Now().Unix(), IsUpdate: isUpdate, Users: updateUsers}
 	collUpdate.InsertOne(ctx, updateInfo)
 	postInfo := utils.PostUpdateInfo{Info: updateInfo, Type: actionType}
-	model.PostUpdateInfo(postInfo)
+	var i int = 1
+	for {
+		err := model.PusherUpdateInfo(postInfo)
+		if err == nil || i == 5 {
+			break
+		}
+		i++
+	}
 }

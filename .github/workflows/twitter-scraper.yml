@@ -50,7 +50,10 @@ jobs:
           USERS_DATA: ${{ github.event.client_payload.users }}
           MONGODB_CLOUD_URI: ${{ secrets.MONGODB_CLOUD_URI }}
           MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
-          VERCEL_APP_URL: ${{ secrets.VERCEL_APP_URL }}
+          PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
+          PUSHER_KEY: ${{ secrets.PUSHER_KEY }}
+          PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER }}
+          PUSHER_SECRET: ${{ secrets.PUSHER_SECRET }}
 
       - name: Run scraper
         if: ${{ !(github.event.action=='addusers' || github.event.action=='delusers') }}
@@ -59,4 +62,7 @@ jobs:
         env:
           MONGODB_CLOUD_URI: ${{ secrets.MONGODB_CLOUD_URI }}
           MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
-          VERCEL_APP_URL: ${{ secrets.VERCEL_APP_URL }}
+          PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
+          PUSHER_KEY: ${{ secrets.PUSHER_KEY }}
+          PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER }}
+          PUSHER_SECRET: ${{ secrets.PUSHER_SECRET }}
