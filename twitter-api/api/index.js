@@ -6,7 +6,6 @@
  */
 require('dotenv').config();
 const http = require('http');
-const Pusher = require('pusher');
 const app = require('../app');
 const connectToDatabase = require('../src/db');
 
@@ -48,21 +47,6 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
-/**
-  * Create Pusher Channels server.
-  */
-const {
-  PUSHER_APP_ID: appId,
-  PUSHER_KEY: key,
-  PUSHER_SECRET: secret,
-} = process.env;
-global.PUSHER = new Pusher({
-  appId,
-  key,
-  secret,
-  cluster: 'ap3',
-  useTLS: true,
-});
 /**
   * Event listener for HTTP server "error" event.
   */
