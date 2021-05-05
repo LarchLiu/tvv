@@ -40,8 +40,6 @@ exports.execute = async function (req, res) {
       });
       pusher.trigger('update-info', 'scraper-post', {
         type: Type, updateInfo,
-      }, () => {
-        console.log('push finish');
       });
       return res.status(200).json({ data: 'success' });
     } catch (err) {
