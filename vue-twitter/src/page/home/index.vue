@@ -205,7 +205,10 @@
           后可手动触发更新和增加删除用户列表.
         </p>
         <!-- eslint-disable-next-line -->
-        <a-input v-model:value="inputToken" placeholder="github personal access token" />
+        <a-input
+          v-model:value="inputToken"
+          placeholder="github personal access token"
+        />
       </a-modal>
       <a-modal
         :visible="addUserVisible"
@@ -228,20 +231,16 @@
         @ok="delUsersAction"
       >
         <!-- eslint-disable-next-line -->
-        <a-checkbox-group v-model:value="delUserSelect" :options="delUserData" />
+        <a-checkbox-group
+          v-model:value="delUserSelect"
+          :options="delUserData"
+        />
       </a-modal>
     </div>
   </div>
 </template>
 <script>
-import {
-  ref,
-  getCurrentInstance,
-  computed,
-  onMounted,
-  onUnmounted,
-  watch,
-} from 'vue'
+import { ref, getCurrentInstance, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import twitterApi from '@/api/twitter/index'
 import AsideBox from '@/components/AsideBox/index.vue'
@@ -275,9 +274,13 @@ export default {
   },
   setup() {
     const { ctx, proxy } = getCurrentInstance()
+    const pusherKey = process.env.VUE_APP_PUSHER_KEY
+    // eslint-disable-next-line no-undef
+    const pusher = new Pusher(pusherKey, {
+      cluster: 'ap3',
+    })
     const updateUser = ref([])
     const usersList = ref([])
-    const usersData = ref({})
     const delUserSelect = ref([])
     const usersListObj = ref({})
     const currentUser = ref('')
@@ -318,7 +321,6 @@ export default {
       return curPage.value === pages
     })
 
-    let timer
     let ghApi
 
     const onExit = () => {
@@ -520,6 +522,7 @@ export default {
             lastupdatetime,
             tweetscount,
           },
+          profile: {},
         }
         list.unshift(all)
       }
@@ -584,7 +587,17 @@ export default {
           if (!list.length) {
             return
           }
+          const oldObj = Object.assign({}, usersListObj.value)
           usersListObj.value = arrToObj(list, 'userinfo.username')
+          const users = Object.keys(usersListObj.value)
+          for (let i = 0; i < users.length; i++) {
+            const user = users[i]
+            if (oldObj[user] && oldObj[user].Tweets) {
+              usersListObj.value[user].Tweets = oldObj[user].Tweets
+            } else {
+              usersListObj.value[user].Tweets = []
+            }
+          }
         })
         .catch((e) => {
           console.log(e)
@@ -598,7 +611,6 @@ export default {
         .then((data) => {
           if (curPage.value === 1) {
             usersListObj.value[user].Tweets = data
-            // usersData.value[user] = usersListObj.value[user]
           } else {
             usersListObj.value[user].Tweets = usersListObj.value[
               user
@@ -620,7 +632,11 @@ export default {
         })
         .catch((err) => {
           loadingMore.value = false
-          curPage.value--
+          if (page > 1) {
+            curPage.value--
+          } else {
+            usersListObj.value[user].Tweets = []
+          }
           console.log(err)
         })
     }
@@ -658,33 +674,38 @@ export default {
         auth: ghToken.value,
       })
       dataInit()
-      timer = window.setInterval(() => {
-        setTimeout(() => {
-          getUpdateInfo()
-        }, 0)
-      }, 120000)
-    })
-
-    onUnmounted(() => {
-      window.clearInterval(timer)
-    })
-
-    watch(updateTime, () => {
-      if (triggerUpdate.value) {
-        triggerUpdate.value = false
-        proxy.$message.success({
-          content: '更新请求已完毕',
-          duration: 3,
-        })
-      }
-      if (triggerChangeUsers.value) {
-        triggerChangeUsers.value = false
-        proxy.$message.success({
-          content: '更改用户请求已完毕',
-          duration: 3,
-        })
-        getUserList()
-      }
+      const channel = pusher.subscribe('update-info')
+      channel.bind('scraper-post', function (data) {
+        if (data.updateInfo) {
+          const updateInfo = data.updateInfo
+          if (updateTime.value < updateInfo.updatetime) {
+            updateTime.value = updateInfo.updatetime
+            if (updateInfo.isupdate) {
+              needUpdate.value = updateInfo.isupdate
+              updateUser.value = updateUser.value.concat(updateInfo.users)
+              updateUser.value.push('@all')
+              updateUser.value = uniqueArr(updateUser.value)
+            }
+          }
+          if (triggerUpdate.value) {
+            triggerUpdate.value = false
+            proxy.$message.success({
+              content: '更新请求已完毕',
+              duration: 3,
+            })
+          }
+          if (triggerChangeUsers.value) {
+            triggerChangeUsers.value = false
+            proxy.$message.success({
+              content: '更改用户请求已完毕',
+              duration: 3,
+            })
+          }
+          if (data.type === 'changeusers') {
+            getUserList()
+          }
+        }
+      })
     })
 
     watch(ghToken, () => {
@@ -712,7 +733,6 @@ export default {
       currentUser,
       curPage,
       usersList,
-      usersData,
       getUserTweets,
       getUserList,
       getUpdateInfo,

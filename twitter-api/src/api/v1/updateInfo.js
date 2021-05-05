@@ -12,5 +12,23 @@ exports.execute = async function (req, res) {
     } catch (err) {
       return res.json({ err });
     }
+  } else if (req.method.toLowerCase() === 'post') {
+    try {
+      const { Info, Type } = req.body;
+      const updateInfo = {};
+
+      if (Info) {
+        const keys = Object.keys(Info);
+        keys.forEach((key) => {
+          updateInfo[key.toLowerCase()] = Info[key];
+        });
+      }
+      global.PUSHER.trigger('update-info', 'scraper-post', {
+        type: Type, updateInfo,
+      });
+      return res.status(200).json({ data: 'success' });
+    } catch (err) {
+      return res.json({ err });
+    }
   }
 };

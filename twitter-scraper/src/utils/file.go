@@ -122,7 +122,7 @@ func randFileName(dirPath string, suffix string) (filePath string, fileName stri
 	return randFileName(dirPath, suffix)
 }
 
-func getCorrectHref(href string, url string) (correctHref string, exist bool) {
+func GetCorrectHref(href string, url string) (correctHref string, exist bool) {
 	completeValidator := regexp.MustCompile(`\A((http)|(https))(.+)((.jpg)|(.png)|(.jpeg))\z`)
 	imcompleteValidator := regexp.MustCompile(`\A(||)(.+)((.jpg)|(.jpeg)|(.png))\z`)
 	if completeValidator.MatchString(href) {

@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+	actionType := "scraper"
 	info := utils.UserChangeInfo{}
 	if err := env.Parse(&info); err != nil {
 		fmt.Printf("%+v\n", err)
@@ -36,6 +37,7 @@ func main() {
 	}()
 
 	if info.Type == "addusers" || info.Type == "delusers" {
+		actionType = "changeusers"
 		users := strings.Split(info.Users, ",")
 		for _, user := range users {
 			one := utils.DbProfile{}
@@ -147,7 +149,7 @@ func main() {
 				collTweet.InsertMany(ctx, tweets)
 			}
 
-			tweetsCnt, err := collTweet.Find(ctx, bson.M{"username": user}).Count()
+			tweetsCnt, _ := collTweet.Find(ctx, bson.M{"username": user}).Count()
 
 			profile, err := scraper.GetProfile(user)
 			if err != nil {
@@ -180,4 +182,6 @@ func main() {
 	// write and upload json file of updataInfo
 	updateInfo := utils.UpdateInfo{UpdateTime: time.Now().Unix(), IsUpdate: isUpdate, Users: updateUsers}
 	collUpdate.InsertOne(ctx, updateInfo)
+	postInfo := utils.PostUpdateInfo{Info: updateInfo, Type: actionType}
+	model.PostUpdateInfo(postInfo)
 }

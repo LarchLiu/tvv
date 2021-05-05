@@ -45,4 +45,9 @@ type (
 		Type  string `env:"EVENT_TYPE" envDefault:""`
 		Users string `env:"USERS_DATA" envDefault:""`
 	}
+	//
+	PostUpdateInfo struct {
+		Info UpdateInfo
+		Type string
+	}
 )
