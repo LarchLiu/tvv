@@ -277,7 +277,7 @@ export default {
     const {
       VUE_APP_PUSHER_KEY: pusherKey,
       VUE_APP_PUSHER_CLUSTER: cluster,
-    } = process.env.VUE_APP_PUSHER_KEY
+    } = process.env
     // eslint-disable-next-line no-undef
     const pusher = new Pusher(pusherKey, {
       cluster,
