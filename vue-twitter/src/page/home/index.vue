@@ -8,7 +8,7 @@
     <div :class="isMobile ? '' : 'w820'">
       <div class="bd">
         <div class="aside-wrap" v-if="!isMobile">
-          <aside-box title="GH Twitter" :need-fixed="true" id-name="header">
+          <aside-box :title="title" :need-fixed="true" id-name="header">
             <template v-slot:btn>
               <span style="float: right">
                 <MinusOutlined
@@ -282,6 +282,7 @@ export default {
     const pusher = new Pusher(pusherKey, {
       cluster,
     })
+    const title = settings.title
     const updateUser = ref([])
     const usersList = ref([])
     const delUserSelect = ref([])
@@ -562,18 +563,23 @@ export default {
         })
     }
 
+    const checkUpdateUsers = (updateInfo) => {
+      if (updateTime.value < updateInfo.updatetime) {
+        updateTime.value = updateInfo.updatetime
+        if (updateInfo.isupdate) {
+          needUpdate.value = updateInfo.isupdate
+          updateUser.value = updateUser.value.concat(updateInfo.users)
+          updateUser.value.push('@all')
+          updateUser.value = uniqueArr(updateUser.value)
+        }
+      }
+    }
+
     const getUpdateInfo = () => {
       twitterApi
         .getUpdateInfo()
         .then((res) => {
-          if (updateTime.value < res.updatetime) {
-            updateTime.value = res.updatetime
-            if (res.isupdate) {
-              needUpdate.value = res.isupdate
-              updateUser.value = updateUser.value.concat(res.users)
-              updateUser.value = uniqueArr(updateUser.value)
-            }
-          }
+          checkUpdateUsers(res)
         })
         .catch((e) => {
           console.log(e)
@@ -672,6 +678,34 @@ export default {
       e.preventDefault()
     }
 
+    const handleUpdateInfo = (data) => {
+      if (data.Info) {
+        const updateInfo = data.Info
+        const keys = Object.keys(updateInfo)
+        keys.forEach((key) => {
+          updateInfo[key.toLowerCase()] = updateInfo[key]
+        })
+        checkUpdateUsers(updateInfo)
+        if (triggerUpdate.value) {
+          triggerUpdate.value = false
+          proxy.$message.success({
+            content: '更新请求已完毕',
+            duration: 3,
+          })
+        }
+        if (triggerChangeUsers.value) {
+          triggerChangeUsers.value = false
+          proxy.$message.success({
+            content: '更改用户请求已完毕',
+            duration: 3,
+          })
+        }
+        if (data.Type === 'changeusers') {
+          getUserList()
+        }
+      }
+    }
+
     onMounted(() => {
       ghApi = new Octokit({
         auth: ghToken.value,
@@ -680,39 +714,7 @@ export default {
       const channel = pusher.subscribe('update-info')
       channel.bind('scraper-post', function (data) {
         console.log(data)
-        if (data.Info) {
-          const updateInfo = data.Info
-          const keys = Object.keys(updateInfo)
-          keys.forEach((key) => {
-            updateInfo[key.toLowerCase()] = updateInfo[key]
-          })
-          if (updateTime.value < updateInfo.updatetime) {
-            updateTime.value = updateInfo.updatetime
-            if (updateInfo.isupdate) {
-              needUpdate.value = updateInfo.isupdate
-              updateUser.value = updateUser.value.concat(updateInfo.users)
-              updateUser.value.push('@all')
-              updateUser.value = uniqueArr(updateUser.value)
-            }
-          }
-          if (triggerUpdate.value) {
-            triggerUpdate.value = false
-            proxy.$message.success({
-              content: '更新请求已完毕',
-              duration: 3,
-            })
-          }
-          if (triggerChangeUsers.value) {
-            triggerChangeUsers.value = false
-            proxy.$message.success({
-              content: '更改用户请求已完毕',
-              duration: 3,
-            })
-          }
-          if (data.Type === 'changeusers') {
-            getUserList()
-          }
-        }
+        handleUpdateInfo(data)
       })
     })
 
@@ -733,6 +735,7 @@ export default {
     })
 
     return {
+      title,
       isEndPage,
       disablePreview,
       imageClick,
@@ -776,6 +779,8 @@ export default {
       sidebarOpen,
       getNextPage,
       loadingMore,
+      checkUpdateUsers,
+      handleUpdateInfo,
     }
   },
 }
