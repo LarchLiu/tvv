@@ -61,7 +61,7 @@
         </div>
         <div v-else>
           <a-drawer
-            title="GH Twitter"
+            :title="title"
             placement="left"
             :closable="false"
             :visible="sidebarOpen"
@@ -127,12 +127,6 @@
               <span v-else class="name">{{
                 usersListObj[currentUser].profile.name
               }}</span>
-              <span style="font-weight: 700; color: rgb(15, 20, 25)">
-                {{ usersListObj[currentUser].userinfo.tweetscount }}
-              </span>
-              <span style="color: rgb(91, 112, 131); margin-right: 20px">
-                推文</span
-              >
               <span v-if="isMobile" class="floating">
                 <a-dropdown :trigger="['click']">
                   <span @click="(e) => e.preventDefault()"
@@ -316,13 +310,17 @@ export default {
       }
     })
     const isEndPage = computed(() => {
-      const pages = Math.ceil(
-        parseInt(
-          usersListObj.value[currentUser.value].userinfo.tweetscount,
-          10
-        ) / settings.pageSize
-      )
-      return curPage.value === pages
+      if (currentUser.value && usersListObj.value[currentUser.value]) {
+        const pages = Math.ceil(
+          parseInt(
+            usersListObj.value[currentUser.value].userinfo.tweetscount,
+            10
+          ) / settings.pageSize
+        )
+        return curPage.value === pages
+      } else {
+        return true
+      }
     })
 
     let ghApi

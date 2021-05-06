@@ -75,6 +75,20 @@
             />
           </a>
         </div>
+        <a-row class="bottom">
+          <a-col :span="8">
+            <MessageOutlined class="icon" />
+            <span>{{ tweet.replies }}</span>
+          </a-col>
+          <a-col :span="8">
+            <RetweetOutlined class="icon" />
+            <span>{{ tweet.retweets }}</span>
+          </a-col>
+          <a-col :span="8">
+            <HeartOutlined class="icon" />
+            <span>{{ tweet.likes }}</span>
+          </a-col>
+        </a-row>
       </div>
     </div>
     <div v-else class="body">
@@ -139,6 +153,20 @@
             />
           </a>
         </div>
+        <a-row class="bottom">
+          <a-col :span="8">
+            <MessageOutlined class="icon" />
+            <span>{{ tweet.replies }}</span>
+          </a-col>
+          <a-col :span="8">
+            <RetweetOutlined class="icon" />
+            <span>{{ tweet.retweets }}</span>
+          </a-col>
+          <a-col :span="8">
+            <HeartOutlined class="icon" />
+            <span>{{ tweet.likes }}</span>
+          </a-col>
+        </a-row>
       </div>
     </div>
   </div>
@@ -147,6 +175,11 @@
 <script>
 import { ref, onMounted, watch } from 'vue'
 import { formatTime } from '@/utils/index.js'
+import {
+  MessageOutlined,
+  HeartOutlined,
+  RetweetOutlined,
+} from '@ant-design/icons-vue'
 
 export default {
   name: 'Card',
@@ -161,6 +194,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  components: {
+    MessageOutlined,
+    HeartOutlined,
+    RetweetOutlined,
   },
   setup(props, context) {
     const mouseEnter = ref(false)
@@ -375,6 +413,14 @@ export default {
       }
       :deep(.PrettyLink-prefix) {
         color: rgb(27, 149, 224);
+      }
+    }
+    .bottom {
+      margin-top: 12px;
+      color: rgb(91, 112, 131);
+      .icon {
+        font-size: 18px;
+        margin-right: 12px;
       }
     }
   }

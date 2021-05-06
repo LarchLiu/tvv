@@ -21,6 +21,8 @@ import {
   Form,
   Menu,
   Modal,
+  Row,
+  Col,
   message,
 } from 'ant-design-vue'
 
@@ -44,6 +46,8 @@ app
   .use(Input)
   .use(Form)
   .use(Modal)
+  .use(Row)
+  .use(Col)
 
 // 插件注入
 app.use(router).use(store).use(Vue3VideoPlayer).mount('#app')

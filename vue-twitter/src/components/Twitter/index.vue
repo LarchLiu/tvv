@@ -2,6 +2,17 @@
   <div class="twitter">
     <div v-if="Object.keys(detail).length > 0" class="content">
       <div v-if="!isAll" class="profile">
+        <div ref="banner" class="banner">
+          <img
+            class="fit-contain"
+            :src="changeToCFImg(detail.profile.banner)"
+          />
+          <a-avatar
+            class="avatar"
+            :size="avatarSize"
+            :src="changeToBigAvatar(detail.profile.avatar)"
+          />
+        </div>
         <div class="name">
           <div style="font-size: 19px; font-weight: 800; border: 0 solid black">
             {{ detail.profile.name }}
@@ -69,8 +80,10 @@
 </template>
 
 <script>
+import { ref, watch } from 'vue'
 import Card from './card.vue'
 import { LoadingOutlined } from '@ant-design/icons-vue'
+const imgDomain = process.env.VUE_APP_CF_WORKERS_IMG_DOMAIN
 
 export default {
   name: 'Twitter',
@@ -109,7 +122,31 @@ export default {
       default: false,
     },
   },
+  setup() {
+    const banner = ref(null)
+    const bannerWidth = ref(0)
+    const avatarSize = ref(0)
+    watch(banner, () => {
+      if (banner.value) {
+        bannerWidth.value = banner.value.clientWidth
+        avatarSize.value = ((bannerWidth.value / 3) * 0.35 - 4) * 2
+      }
+    })
+
+    return {
+      avatarSize,
+      banner,
+    }
+  },
   methods: {
+    changeToCFImg(src) {
+      return imgDomain + src
+    },
+    changeToBigAvatar(src) {
+      const reg = new RegExp('_normal.')
+      src = src.replace(reg, '_200x200.')
+      return imgDomain + src
+    },
     margeDetail(tweet, profile) {
       return { avatar: profile.avatar, name: profile.name, ...tweet }
     },
@@ -136,6 +173,22 @@ export default {
     font-size: 15px;
 
     .profile {
+      .banner {
+        position: relative;
+        .fit-contain {
+          width: 100%;
+          object-fit: cover;
+        }
+        .avatar {
+          position: absolute;
+          top: 65%;
+          right: 0;
+          bottom: 0;
+          left: 70%;
+          border: 4px solid;
+          border-radius: 9999px;
+        }
+      }
       .name {
         padding: 10px 10px;
       }
