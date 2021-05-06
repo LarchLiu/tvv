@@ -8,7 +8,8 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-app.use(logger('combined'));
+const loggerFormat = process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
+app.use(logger(loggerFormat));
 app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({ extended: false }));
 

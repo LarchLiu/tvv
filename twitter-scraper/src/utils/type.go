@@ -39,15 +39,12 @@ type (
 		UpdateTime int64
 		IsUpdate   bool
 		Users      []string
+		Type       string
 	}
-	// UserChangeInfo users change info
-	UserChangeInfo struct {
-		Type  string `env:"EVENT_TYPE" envDefault:""`
+	// EventInfo users change info
+	EventInfo struct {
+		Event string `env:"EVENT_NAME" envDefault:""`
+		Type  string `env:"ACTION_TYPE" envDefault:""`
 		Users string `env:"USERS_DATA" envDefault:""`
-	}
-	//
-	PostUpdateInfo struct {
-		Info UpdateInfo
-		Type string
 	}
 )

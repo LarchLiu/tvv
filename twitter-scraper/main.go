@@ -17,10 +17,16 @@ import (
 )
 
 func main() {
-	actionType := "scraper"
-	info := utils.UserChangeInfo{}
+	info := utils.EventInfo{}
 	if err := env.Parse(&info); err != nil {
 		fmt.Printf("%+v\n", err)
+	}
+	triggerType := info.Event
+
+	if info.Event == "repository_dispatch" {
+		triggerType = info.Type
+	} else if info.Event == "workflow_dispatch" {
+		triggerType = "manual"
 	}
 
 	ctx := context.Background()
@@ -37,7 +43,6 @@ func main() {
 	}()
 
 	if info.Type == "addusers" || info.Type == "delusers" {
-		actionType = "changeusers"
 		users := strings.Split(info.Users, ",")
 		for _, user := range users {
 			one := utils.DbProfile{}
@@ -179,13 +184,11 @@ func main() {
 		}
 	}
 
-	// write and upload json file of updataInfo
-	updateInfo := utils.UpdateInfo{UpdateTime: time.Now().Unix(), IsUpdate: isUpdate, Users: updateUsers}
+	updateInfo := utils.UpdateInfo{UpdateTime: time.Now().Unix(), IsUpdate: isUpdate, Users: updateUsers, Type: triggerType}
 	collUpdate.InsertOne(ctx, updateInfo)
-	postInfo := utils.PostUpdateInfo{Info: updateInfo, Type: actionType}
 	var i int = 1
 	for {
-		err := model.PusherUpdateInfo(postInfo)
+		err := model.PusherUpdateInfo(updateInfo)
 		if err == nil || i == 5 {
 			break
 		}

@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: "0 0/4 * * *"
   repository_dispatch:
-    types: [scraper, addusers, delusers]
+    types: [refresh, addusers, delusers]
   workflow_dispatch:
 
 jobs:
@@ -50,7 +50,8 @@ jobs:
         run: go run main.go
         working-directory: twitter-scraper
         env:
-          EVENT_TYPE: ${{ github.event.action }}
+          EVENT_NAME: ${{ github.event_name }}
+          ACTION_TYPE: ${{ github.event.action }}
           USERS_DATA: ${{ github.event.client_payload.users }}
           MONGODB_CLOUD_URI: ${{ secrets.MONGODB_CLOUD_URI }}
           MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
@@ -64,6 +65,8 @@ jobs:
         run: go run main.go
         working-directory: twitter-scraper
         env:
+          EVENT_NAME: ${{ github.event_name }}
+          ACTION_TYPE: ${{ github.event.action }}
           MONGODB_CLOUD_URI: ${{ secrets.MONGODB_CLOUD_URI }}
           MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
           PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}

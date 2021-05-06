@@ -356,7 +356,7 @@ export default {
       } else {
         ghApi
           .request(`POST ${repoUrl}`, {
-            event_type: 'scraper',
+            event_type: 'refresh',
           })
           .then(() => {
             triggerUpdate.value = true
@@ -679,8 +679,8 @@ export default {
     }
 
     const handleUpdateInfo = (data) => {
-      if (data.Info) {
-        const updateInfo = data.Info
+      if (data) {
+        const updateInfo = data
         const keys = Object.keys(updateInfo)
         keys.forEach((key) => {
           updateInfo[key.toLowerCase()] = updateInfo[key]
@@ -700,7 +700,7 @@ export default {
             duration: 3,
           })
         }
-        if (data.Type === 'changeusers') {
+        if (updateInfo.type === 'addusers' || updateInfo.type === 'delusers') {
           getUserList()
         }
       }

@@ -8,6 +8,7 @@ const UpdateSchema = new mongoose.Schema({
   updatetime: Long,
   isupdate: Boolean,
   users: [String],
+  type: String,
 });
 
 module.exports = mongoose.model('updates', UpdateSchema);
