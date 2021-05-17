@@ -287,8 +287,13 @@ export default {
     const loadingMore = ref(false)
     const imgSrc = ref('')
     const store = useStore()
-    const isMobile = ref(false)
-    const userInfo = ref(null)
+    const userInfo = computed(() => {
+      if (usersList.value.length > 0) {
+        return store.getters.user
+      }
+      return null
+    })
+    const isMobile = computed(() => store.getters.isMobile)
     const delUserData = computed(() => {
       if (usersList.value.length > 0) {
         return usersList.value.slice(1).map((item) => {
@@ -710,8 +715,6 @@ export default {
     }
 
     onMounted(() => {
-      isMobile.value = store.getters.isMobile
-      userInfo.value = store.getters.user
       dataInit()
       const channel = pusher.subscribe('update-info')
       channel.bind('scraper-post', function (data) {
