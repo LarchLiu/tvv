@@ -1,4 +1,4 @@
-import service from './request'
+import service from './service'
 
 const base = '/api'
 
@@ -73,7 +73,7 @@ const getRequest = (url, payload = {}) => {
       params: payload,
     })
       .then((response) => {
-        resolve(response.data)
+        resolve(response)
       })
       .catch((error) => {
         reject(error)

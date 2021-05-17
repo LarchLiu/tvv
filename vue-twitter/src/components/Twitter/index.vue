@@ -9,6 +9,7 @@
           />
           <a-avatar
             class="avatar"
+            :style="isMobile ? 'border: 2px solid' : 'border: 4px solid'"
             :size="avatarSize"
             :src="changeToBigAvatar(detail.profile.avatar)"
           />
@@ -122,14 +123,16 @@ export default {
       default: false,
     },
   },
-  setup() {
+  setup(props) {
     const banner = ref(null)
     const bannerWidth = ref(0)
     const avatarSize = ref(0)
     watch(banner, () => {
       if (banner.value) {
         bannerWidth.value = banner.value.clientWidth
-        avatarSize.value = ((bannerWidth.value / 3) * 0.35 - 4) * 2
+        avatarSize.value = Math.ceil(
+          ((bannerWidth.value / 3) * 0.35 - (props.isMobile ? 2 : 4)) * 2
+        )
       }
     })
 
@@ -185,7 +188,6 @@ export default {
           right: 0;
           bottom: 0;
           left: 70%;
-          border: 4px solid;
           border-radius: 9999px;
         }
       }

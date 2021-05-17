@@ -35,62 +35,50 @@ func main() {
 		fmt.Println(e)
 		return
 	}
-	collProfile := model.DbColl(cli, "users")
+	collProfile := model.DbColl(cli, "tweeps")
 	collTweet := model.DbColl(cli, "tweets")
 	collUpdate := model.DbColl(cli, "updates")
 	defer func() {
 		model.DbClose(cli)
 	}()
 
-	if info.Type == "addusers" || info.Type == "delusers" {
-		users := strings.Split(info.Users, ",")
-		for _, user := range users {
-			one := utils.DbProfile{}
-			count, err := collProfile.Find(ctx, bson.M{"userinfo.username": user}).Count()
-			if err != nil {
-				fmt.Println(err)
-			}
-			if count > 0 {
-				if info.Type == "delusers" {
-					collProfile.RemoveAll(ctx, bson.M{"userinfo.username": user})
-					collTweet.RemoveAll(ctx, bson.M{"username": user})
-				}
-				continue
-			}
-
-			if info.Type == "addusers" {
-				one.Username = user
-				collProfile.InsertOne(ctx, utils.DbProfile{UserInfo: one.UserInfo})
-			}
-		}
-	}
-
 	var users []string
 	dir, _ := os.Getwd()
 	twitterDir := path.Join(dir, "./raw/twitter") + "/"
 	imgReg := regexp.MustCompile(`(?s)(\<br\>\<a href=(.*)\>\<img(.*)\<\/a\>)(?s)`)
-	all := []utils.DbProfile{}
-	err := collProfile.Find(ctx, bson.D{{}}).Sort("_id").All(&all)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		for _, user := range all {
-			users = append(users, user.Username)
+
+	if info.Type == "addusers" {
+		addUsers := strings.Split(info.Users, ",")
+		for _, user := range addUsers {
+			one := utils.DbProfile{}
+			one.Username = user
+			collProfile.InsertOne(ctx, utils.DbProfile{UserInfo: one.UserInfo})
+			users = append(users, user)
 		}
-		if len(users) == 0 {
-			f, err := utils.GetFileContent(twitterDir + "userList.txt")
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				f = strings.Replace(f, " ", "", -1) // 删除空格
-				users = strings.Split(f, ",")
-				for _, user := range users {
-					one := utils.DbProfile{}
-					one.Username = user
-					one.LastTweetTime = 0
-					one.LastUpdateTime = time.Now().Unix()
-					one.TweetsCount = 0
-					collProfile.InsertOne(ctx, utils.DbProfile{UserInfo: one.UserInfo})
+	} else {
+		all := []utils.DbProfile{}
+		err := collProfile.Find(ctx, bson.D{{}}).Sort("_id").All(&all)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			for _, user := range all {
+				users = append(users, user.Username)
+			}
+			if len(users) == 0 {
+				f, err := utils.GetFileContent(twitterDir + "userList.txt")
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					f = strings.Replace(f, " ", "", -1) // 删除空格
+					users = strings.Split(f, ",")
+					for _, user := range users {
+						one := utils.DbProfile{}
+						one.Username = user
+						one.LastTweetTime = 0
+						one.LastUpdateTime = time.Now().Unix()
+						one.TweetsCount = 0
+						collProfile.InsertOne(ctx, utils.DbProfile{UserInfo: one.UserInfo})
+					}
 				}
 			}
 		}

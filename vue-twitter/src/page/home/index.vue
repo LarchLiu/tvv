@@ -12,21 +12,20 @@
             <template v-slot:btn>
               <span style="float: right">
                 <MinusOutlined
-                  v-if="ghToken"
+                  v-if="userInfo && userInfo.role !== 'guest'"
                   style="margin-right: 4px"
                   @click="handleDelUsers"
                 />
                 <PlusOutlined
-                  v-if="ghToken"
+                  v-if="userInfo && userInfo.role !== 'guest'"
                   style="margin-right: 4px"
                   @click="handleAddUsers"
                 />
                 <SyncOutlined
-                  v-if="ghToken"
+                  v-if="userInfo && userInfo.role === 'admin'"
                   style="margin-right: 4px"
                   @click="actionScraper"
                 />
-                <SettingFilled @click="tokenVisible = true" />
               </span>
             </template>
             <template v-slot:default v-if="usersList.length > 0">
@@ -129,23 +128,23 @@
               }}</span>
               <span v-if="isMobile" class="floating">
                 <a-dropdown :trigger="['click']">
-                  <span @click="(e) => e.preventDefault()"
+                  <span @click.prevent
                     ><SettingFilled style="font-size: 20px"
                   /></span>
                   <template #overlay>
-                    <a-menu>
-                      <a-menu-item v-if="ghToken" key="0">
+                    <a-menu v-if="userInfo">
+                      <a-menu-item v-if="userInfo.role === 'admin'">
                         <a @click="actionScraper">更新数据</a>
                       </a-menu-item>
-                      <a-menu-item v-if="ghToken" key="1">
+                      <a-menu-item v-if="userInfo.role !== 'guest'">
                         <a @click="handleAddUsers">添加用户</a>
                       </a-menu-item>
-                      <a-menu-item v-if="ghToken" key="2">
+                      <a-menu-item v-if="userInfo.role !== 'guest'">
                         <a @click="handleDelUsers">删除用户</a>
                       </a-menu-item>
-                      <a-menu-divider v-if="ghToken" />
-                      <a-menu-item key="3">
-                        <a @click="tokenVisible = true">设置 Token</a>
+                      <a-menu-divider v-if="userInfo.role !== 'guest'" />
+                      <a-menu-item>
+                        <a @click="onExit">退出</a>
                       </a-menu-item>
                     </a-menu>
                   </template>
@@ -186,25 +185,7 @@
         </div>
       </div>
       <a-modal
-        :visible="tokenVisible"
-        title="Add Token"
-        ok-text="确认"
-        cancel-text="取消"
-        @cancel="cancelTokenInput"
-        @ok="setGHToken"
-      >
-        <p>切勿泄露 token!</p>
-        <p>
-          请输入具有 repo 权限的 github personal access token, 设置 token
-          后可手动触发更新和增加删除用户列表.
-        </p>
-        <!-- eslint-disable-next-line -->
-        <a-input
-          v-model:value="inputToken"
-          placeholder="github personal access token"
-        />
-      </a-modal>
-      <a-modal
+        v-if="userInfo"
         :visible="addUserVisible"
         title="添加用户"
         ok-text="确认"
@@ -212,9 +193,18 @@
         @cancel="cancelUserInput"
         @ok="addUsersAction"
       >
-        <p>请输入用户名，添加多个用户以空格分割</p>
-        <!-- eslint-disable-next-line -->
-        <a-input v-model:value="inputUsers" placeholder="@username" />
+        <div
+          v-if="
+            userInfo.maxTweeps < 0 ||
+            (userInfo.maxTweeps > 0 && userInfo.maxTweeps > delUserData.length)
+          "
+        >
+          <p>请输入用户名，添加多个用户以空格分割</p>
+          <a-input v-model:value="inputUsers" placeholder="@username" />
+        </div>
+        <div v-else>
+          {{ `当前权限仅可添加 ${userInfo.maxTweeps.toString()} 人` }}
+        </div>
       </a-modal>
       <a-modal
         :visible="delUserVisible"
@@ -224,7 +214,6 @@
         @cancel="cancelUserSelect"
         @ok="delUsersAction"
       >
-        <!-- eslint-disable-next-line -->
         <a-checkbox-group
           v-model:value="delUserSelect"
           :options="delUserData"
@@ -241,7 +230,6 @@ import AsideBox from '@/components/AsideBox/index.vue'
 import Twitter from '@/components/Twitter/index.vue'
 import ImagePreview from '@/components/ImagePreview/index'
 import FixedHeader from '@/components/FixedHeader/index.vue'
-import { Octokit } from '@octokit/core'
 import { arrToObj, uniqueArr, parseTime } from '@/utils/index'
 import settings from '@/settings'
 import {
@@ -297,9 +285,8 @@ export default {
     const loadingMore = ref(false)
     const imgSrc = ref('')
     const store = useStore()
-    const ghToken = computed(() => store.getters.ghToken)
-    const isMobile = computed(() => store.getters.isMobile)
-    const repoUrl = process.env.VUE_APP_REPO_URL
+    const isMobile = ref(false)
+    const userInfo = ref(null)
     const delUserData = computed(() => {
       if (usersList.value.length > 0) {
         return usersList.value.slice(1).map((item) => {
@@ -323,9 +310,9 @@ export default {
       }
     })
 
-    let ghApi
-
     const onExit = () => {
+      store.dispatch('setUser', '')
+      store.dispatch('setUserTokens', '')
       ctx.$router.push({
         path: '/login',
       })
@@ -352,8 +339,8 @@ export default {
           duration: 3,
         })
       } else {
-        ghApi
-          .request(`POST ${repoUrl}`, {
+        twitterApi
+          .refresh({
             event_type: 'refresh',
           })
           .then(() => {
@@ -364,50 +351,52 @@ export default {
             })
           })
           .catch((err) => {
-            if (err.status === 401) {
-              proxy.$message.error({
-                content: `token 权限有误, ${err.status} ${err.message}`,
-                duration: 3,
-              })
-            } else {
-              proxy.$message.error({
-                content: `${err.status} ${err.message}`,
-                duration: 3,
-              })
-            }
             console.log(err)
           })
       }
     }
 
-    const actionChangeUsers = (type, users) => {
-      ghApi
-        .request(`POST ${repoUrl}`, {
+    const addUsers = (type, users) => {
+      twitterApi
+        .addTweeps({
+          event_type: type,
+          client_payload: {
+            users: users,
+          },
+        })
+        .then((res) => {
+          if (res === 'wait') {
+            triggerChangeUsers.value = true
+            const content = type === 'addusers' ? '添加' : '删除'
+            proxy.$message.success({
+              content: content + '用户请求已发出，请等待响应',
+              duration: 3,
+            })
+          } else {
+            getUserList()
+            proxy.$message.success({
+              content: '添加成功',
+              duration: 3,
+            })
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+
+    const delUsers = (type, users) => {
+      twitterApi
+        .delTweeps({
           event_type: type,
           client_payload: {
             users: users,
           },
         })
         .then(() => {
-          triggerChangeUsers.value = true
-          const content = type === 'addusers' ? '添加' : '删除'
-          proxy.$message.success({
-            content: content + '用户请求已发出，请等待响应',
-            duration: 3,
-          })
+          getUserList()
         })
         .catch((err) => {
-          if (err.status === 401) {
-            proxy.$message.error({
-              content: `token 权限有误, ${err.status} ${err.message}`,
-              duration: 3,
-            })
-          } else {
-            proxy.$message.error({
-              content: `${err.status} ${err.message}`,
-              duration: 3,
-            })
-          }
           console.log(err)
         })
     }
@@ -457,17 +446,23 @@ export default {
 
     const addUsersAction = () => {
       addUserVisible.value = false
-      const users = inputUsers.value
-        .replace(/@/g, '')
-        .replace(/\s+/g, ',')
-        .replace(/^,*|,*$/g, '')
-      if (users) {
-        actionChangeUsers('addusers', users)
-      } else {
-        proxy.$message.warning({
-          content: '用户名为空',
-          duration: 3,
-        })
+      if (
+        userInfo.value.maxTweeps < 0 ||
+        (userInfo.value.maxTweeps > 0 &&
+          userInfo.value.maxTweeps > delUserData.value.length)
+      ) {
+        const users = inputUsers.value
+          .replace(/@/g, '')
+          .replace(/\s+/g, ',')
+          .replace(/^,*|,*$/g, '')
+        if (users) {
+          addUsers('addusers', users)
+        } else {
+          proxy.$message.warning({
+            content: '用户名为空',
+            duration: 3,
+          })
+        }
       }
       inputUsers.value = ''
     }
@@ -476,7 +471,7 @@ export default {
       delUserVisible.value = false
       const users = delUserSelect.value.join(',')
       if (users) {
-        actionChangeUsers('delusers', users)
+        delUsers('delusers', users)
       } else {
         proxy.$message.warning({
           content: '未选择用户',
@@ -613,15 +608,23 @@ export default {
     }
 
     const getUserTweets = (user, page) => {
+      let users = ''
+      if (user === '@all') {
+        const keys = Object.keys(usersListObj.value)
+        keys.shift()
+        users = keys.join(',')
+      } else {
+        users = user
+      }
       twitterApi
-        .getTweetsData(user, page)
+        .getTweetsData(users, page)
         .then((data) => {
           if (curPage.value === 1) {
-            usersListObj.value[user].Tweets = data
+            usersListObj.value[user].Tweets = data.results
           } else {
             usersListObj.value[user].Tweets = usersListObj.value[
               user
-            ].Tweets.concat(data)
+            ].Tweets.concat(data.results)
           }
           const idx = updateUser.value.findIndex((e) => e === user)
           if (idx >= 0) {
@@ -705,20 +708,13 @@ export default {
     }
 
     onMounted(() => {
-      ghApi = new Octokit({
-        auth: ghToken.value,
-      })
+      isMobile.value = store.getters.isMobile
+      userInfo.value = store.getters.user
       dataInit()
       const channel = pusher.subscribe('update-info')
       channel.bind('scraper-post', function (data) {
         console.log(data)
         handleUpdateInfo(data)
-      })
-    })
-
-    watch(ghToken, () => {
-      ghApi = new Octokit({
-        auth: ghToken.value,
       })
     })
 
@@ -748,7 +744,8 @@ export default {
       changeUser,
       onExit,
       actionScraper,
-      actionChangeUsers,
+      addUsers,
+      delUsers,
       margeDetail,
       usersListObj,
       updateUser,
@@ -756,7 +753,6 @@ export default {
       triggerUpdate,
       triggerChangeUsers,
       updateTime,
-      ghToken,
       setGHToken,
       tokenVisible,
       inputToken,
@@ -779,6 +775,7 @@ export default {
       loadingMore,
       checkUpdateUsers,
       handleUpdateInfo,
+      userInfo,
     }
   },
 }

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
-// import router from '@/router'
+import router from '@/router'
 
 // create an axios instance
 const service = axios.create({
@@ -25,55 +25,30 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-  /**
-   * If you want to get http information such as headers or status
-   * Please return  response => response
-   */
-  // response => response.data,
-  /**
-   * Determine the request status by custom code
-   * Here is just an example
-   * You can also judge the status by HTTP Status Code
-   */
   (response) => {
-    const res = response.data
-    if (!(res.err === null || res.err === undefined)) {
-      const msg = res.err.message ? res.err.message : res.err.code
-      message.error({
-        content: msg || 'Error',
-        duration: 5,
-      })
-      return Promise.reject(res.err || 'Error')
-    } else {
-      return res
-    }
+    return response.data
   },
   (error) => {
     console.log('err' + error) // for debug
+    let msg = ''
     if (error.response) {
-      const data = error.response.data
-      if (data.err) {
-        error.message = data.err.message ? data.err.message : data.err.code
-        console.log('error message ' + error.message)
-      }
-      if (error.response.status === 401) {
-        if (error.message === 'ER_AUTH_USER_OR_PWD_ERR') {
-          error.message = '用户名或密码错误！'
-        } else if (error.message === 'jwt expired') {
-          error.message = '认证过期，请重新登录！'
-        } else {
-          error.message = '权限认证有误，请重新登录！'
-        }
+      const response = error.response.data
+      if (response.code && response.message) {
+        msg += response.code + ': ' + response.message
       } else {
-        if (error.message === 'ER_API_PATH_NOT_MATCH') {
-          error.message = 'API路径有误，请确认！'
-        }
+        msg = error.message
+      }
+
+      message.error({
+        content: msg,
+        duration: 5,
+      })
+      if (error.response.status === 401) {
+        router.push({
+          path: '/login',
+        })
       }
     }
-    message.error({
-      content: error.message,
-      duration: 5,
-    })
     return Promise.reject(error)
   }
 )

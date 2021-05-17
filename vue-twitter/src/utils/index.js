@@ -77,9 +77,13 @@ export function formatTime(time, option) {
   if (option) {
     return parseTime(time, option)
   } else {
+    const year =
+      d.getFullYear() < new Date(now).getFullYear()
+        ? d.getFullYear() + '年'
+        : ''
     return (
-      d.getMonth() +
-      1 +
+      year +
+      (d.getMonth() + 1) +
       '月' +
       d.getDate() +
       '日' +
