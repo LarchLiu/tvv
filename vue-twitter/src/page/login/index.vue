@@ -40,20 +40,21 @@
   </div>
 </template>
 <script>
-import { computed, getCurrentInstance, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import WindowPortal from '@/components/WindowPortal'
 import { useForm } from '@ant-design-vue/use'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { getUserTokens } from '@/utils/local-storage'
 
 export default {
   components: { WindowPortal },
   setup() {
     // 路由实例
-    const { ctx } = getCurrentInstance()
     const labelCol = { span: 4 }
     const wrapperCol = { span: 14 }
     const store = useStore()
+    const router = useRouter()
     const open = ref(false)
     const popup = ref(null)
     const isMobile = computed(() => store.getters.isMobile)
@@ -95,7 +96,7 @@ export default {
       // store.dispatch('setGHToken', form.password)
 
       validate().then(() => {
-        ctx.$router.push({
+        router.push({
           path: '/',
         })
       })
@@ -123,7 +124,7 @@ export default {
     watch(tokensChange, () => {
       if (getUserTokens()) {
         store.dispatch('setUserTokens', getUserTokens())
-        ctx.$router.push({
+        router.push({
           path: '/',
         })
       }

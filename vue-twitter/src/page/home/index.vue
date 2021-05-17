@@ -225,6 +225,7 @@
 <script>
 import { ref, getCurrentInstance, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import twitterApi from '@/api/twitter/index'
 import AsideBox from '@/components/AsideBox/index.vue'
 import Twitter from '@/components/Twitter/index.vue'
@@ -255,7 +256,7 @@ export default {
     MenuUnfoldOutlined,
   },
   setup() {
-    const { ctx, proxy } = getCurrentInstance()
+    const { proxy } = getCurrentInstance()
     const {
       VUE_APP_PUSHER_KEY: pusherKey,
       VUE_APP_PUSHER_CLUSTER: cluster,
@@ -264,6 +265,7 @@ export default {
     const pusher = new Pusher(pusherKey, {
       cluster,
     })
+    const router = useRouter()
     const title = settings.title
     const updateUser = ref([])
     const usersList = ref([])
@@ -313,7 +315,7 @@ export default {
     const onExit = () => {
       store.dispatch('setUser', '')
       store.dispatch('setUserTokens', '')
-      ctx.$router.push({
+      router.push({
         path: '/login',
       })
     }
