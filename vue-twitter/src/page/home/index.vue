@@ -287,12 +287,7 @@ export default {
     const loadingMore = ref(false)
     const imgSrc = ref('')
     const store = useStore()
-    const userInfo = computed(() => {
-      if (usersList.value.length > 0) {
-        return store.getters.user
-      }
-      return null
-    })
+    const userInfo = computed(() => store.getters.user)
     const isMobile = computed(() => store.getters.isMobile)
     const delUserData = computed(() => {
       if (usersList.value.length > 0) {

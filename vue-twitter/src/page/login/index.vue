@@ -45,7 +45,7 @@ import WindowPortal from '@/components/WindowPortal'
 import { useForm } from '@ant-design-vue/use'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { getUserTokens } from '@/utils/local-storage'
+import { getUserTokens, getUser } from '@/utils/local-storage'
 
 export default {
   components: { WindowPortal },
@@ -123,6 +123,7 @@ export default {
 
     watch(tokensChange, () => {
       if (getUserTokens()) {
+        store.dispatch('setUser', getUser())
         store.dispatch('setUserTokens', getUserTokens())
         router.push({
           path: '/',
