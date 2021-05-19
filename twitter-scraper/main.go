@@ -104,7 +104,11 @@ func main() {
 					fmt.Println(tweet.Error)
 				} else {
 					if lastTweetTime >= tweet.Tweet.Timestamp {
-						break
+						if tweet.Tweet.IsPin {
+							continue
+						} else {
+							break
+						}
 					}
 					if count == 0 {
 						curLastTweetTime = tweet.Tweet.Timestamp
